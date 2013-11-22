@@ -67,7 +67,7 @@ void ClientTCP::closeSocket()
 	connectionOpened = false;
 }
 
-void ClientTCP::send(void* msg, size_t size) const
+void ClientTCP::send(const void* msg, size_t size) const
 {
 	assert(connectionOpened);
 //	mutex.lock();

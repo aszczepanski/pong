@@ -16,6 +16,11 @@ class Communicator
 public:
 	Communicator(SharedMemory&, ClientTCP&);
 
+	void sendCursorPosition(int x, int y) const;
+	void sendStartRequest() const;
+	void sendEndRequest() const;
+	void getCurrentState();
+
 private:
 	virtual void* start_routine();
 

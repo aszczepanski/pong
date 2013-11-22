@@ -15,7 +15,7 @@ class ClientTCP
 public:
 	ClientTCP(const std::string& hostname, const std::string& port);
 	~ClientTCP();
-	virtual void send(void*, size_t) const;
+	virtual void send(const void*, size_t) const;
 	virtual void receive(void*, size_t) const;
 	void closeSocket();
 private:
