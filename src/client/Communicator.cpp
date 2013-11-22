@@ -44,12 +44,18 @@ void Communicator::getCurrentState()
 
 	clientTCP.send(&STATE, sizeof(char));
 	clientTCP.receive(&stateInfo, sizeof(StateInfo));
+
+	sharedMemory.ball.setPosition(stateInfo.ballX, stateInfo.ballY);
+	sharedMemory.player[0].setPosition(stateInfo.curPlayerX, stateInfo.curPlayerY);
+	sharedMemory.player[1].setPosition(stateInfo.opPlayerX, stateInfo.opPlayerY);
 }
 
 void Communicator::sendStartRequest() const
 {
+	clientTCP.send(&START, sizeof(char));
 }
 
 void Communicator::sendEndRequest() const
 {
+	clientTCP.send(&END, sizeof(char));
 }
