@@ -12,6 +12,10 @@
 *.la
 *.a
 
+# binary files
+client
+server
+
 # cmake files
 CMakeCache.txt
 CMakeFiles
