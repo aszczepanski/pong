@@ -14,9 +14,11 @@ void Player::receive(ISocket&)
 {
 }
 
-void Player::getPosition(int& x, int& y)
+void Player::getPosition(int& x, int& y) const
 {
+	mutex.lock();
 	x = y = 3;
+	mutex.unlock();
 }
 
 void Player::setPosition(int x, int y)

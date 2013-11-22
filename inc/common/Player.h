@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include <common/Transferable.h>
+#include <common/Mutex.h>
 
 namespace common
 {
@@ -12,10 +13,10 @@ class Player
 public:
 	Player();
 
-	void getPosition(int& x, int& y);
+	void getPosition(int& x, int& y) const;
 	void setPosition(int x, int y);
 
-	void getScore(int& score);
+	void getScore(int& score) const;
 	void setScore(int score);
 
 	virtual void send(ISocket&);
@@ -23,6 +24,8 @@ public:
 private:
 	int x;
 	int score;
+
+	mutable Mutex mutex;
 
 };
 
