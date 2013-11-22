@@ -13,8 +13,8 @@
 *.a
 
 # binary files
-client
-server
+client-application
+server-application
 
 # cmake files
 CMakeCache.txt
