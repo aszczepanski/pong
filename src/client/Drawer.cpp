@@ -65,7 +65,16 @@ void* Drawer::start_routine()
 			}
 			if (e.type == SDL_KEYDOWN)
 			{
-				quit = true;
+				switch (e.key.keysym.sym)
+				{
+				case SDLK_SPACE:
+					std::cout << "space" << std::endl;
+					// TODO key == start -> send start request
+					//communicator.sendStartRequest();
+					break;
+				default:
+					quit = true;
+				}
 			}
 			if (e.type == SDL_MOUSEMOTION)
 			{
