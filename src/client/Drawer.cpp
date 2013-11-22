@@ -100,14 +100,17 @@ void* Drawer::start_routine()
 //			body->SetLinearVelocity(vcx);
 //		}
 
-//		rectangle.x = position.x * 100.0 - 16;
-//		rectangle.y = position.y * 100.0 - 16;
-//		rectangle.w = 32;
-//		rectangle.h = 32;
-//		SDL_RenderCopy(ren, greenTex, NULL, &rectangle);
+		int positionX, positionY;
+
+		// draw ball
+		sharedMemory.ball.getPosition(positionX, positionY);
+		rectangle.x = positionX * 100.0 - 16;
+		rectangle.y = positionY * 100.0 - 16;
+		rectangle.w = 32;
+		rectangle.h = 32;
+		SDL_RenderCopy(ren, greenTex, NULL, &rectangle);
 
 		// draw platform
-		int positionX, positionY;
 		sharedMemory.player[0].getPosition(positionX, positionY);
 		SDL_SetRenderDrawColor(ren, 255, 0, 0, 255);
 		rectangle.x = positionX * 100.00 - 40;
