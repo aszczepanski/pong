@@ -3,6 +3,11 @@
 
 #include <common/IThread.h>
 
+namespace common
+{
+	class CursorPosition;
+}
+
 namespace client
 {
 
@@ -16,7 +21,7 @@ class Communicator
 public:
 	Communicator(SharedMemory&, ClientTCP&);
 
-	void sendCursorPosition(int x, int y) const;
+	void sendCursorPosition(common::CursorPosition&) const;
 	void sendStartRequest() const;
 	void sendEndRequest() const;
 	void getCurrentState();

@@ -8,16 +8,4 @@ const unsigned char CURSOR_POSITION = 0x10;
 
 const unsigned char STATE = 0x20;
 
-struct CursorPosition
-{
-	int x, y;
-};
-
-struct StateInfo
-{
-	int ballX, ballY;
-	int curPlayerX, curPlayerY;
-	int opPlayerX, opPlayerY;
-};
-
 #endif // PROTOCOL_H

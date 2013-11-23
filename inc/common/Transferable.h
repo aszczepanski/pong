@@ -1,10 +1,10 @@
 #ifndef TRANSFERABLE_H
 #define TRANSFERABLE_H
 
-class ISocket;
-
 namespace common
 {
+
+class ISocket;
 
 class Transferable
 {
