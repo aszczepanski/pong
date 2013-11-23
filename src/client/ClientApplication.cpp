@@ -5,6 +5,7 @@
 #include <common/SharedMemory.h>
 #include <client/Communicator.h>
 #include <iostream>
+#include <string>
 
 using namespace client;
 using namespace common;
@@ -13,7 +14,13 @@ int main(int argc, char* argv[])
 {
 	std::cout << "Hello pong!" << std::endl;
 
-	ClientUDP clientUDP("127.0.0.1", "6060");
+	std::string host = "127.0.0.1";
+	if (2 == argc)
+	{
+		host = argv[1];
+	}
+
+	ClientUDP clientUDP(host.c_str(), "6060");
 	unsigned char c = 'c';
 	clientUDP.send(&c, sizeof(char));
 	SharedMemory sharedMemory;
