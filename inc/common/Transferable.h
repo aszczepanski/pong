@@ -9,7 +9,7 @@ class ISocket;
 class Transferable
 {
 public:
-	virtual void send(ISocket&) = 0;
+	virtual void send(ISocket&) const = 0;
 	virtual void receive(ISocket&) = 0;
 
 	virtual ~Transferable() { }

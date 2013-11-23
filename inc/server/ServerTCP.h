@@ -32,7 +32,7 @@ private:
 	int sockfd;
 	int in_sockfd;
 	std::string port;
-	static const unsigned short MAX_WAITING_SERVERS = 5;
+	static const unsigned short MAX_WAITING_SERVERS = 2;
 
 	mutable common::Mutex mutex;
 };

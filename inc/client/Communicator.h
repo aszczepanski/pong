@@ -2,26 +2,29 @@
 #define COMMUNICATOR_H
 
 #include <common/IThread.h>
+#include <common/Mutex.h>
 
 namespace common
 {
 	class CursorPosition;
+	class SharedMemory;
 }
 
 namespace client
 {
 
-class SharedMemory;
 class ClientTCP;
+class ClientUDP;
 
 class Communicator
 	: public common::IThread
 {
 
 public:
-	Communicator(SharedMemory&, ClientTCP&);
+	//Communicator(common::SharedMemory&, ClientTCP&);
+	Communicator(common::SharedMemory&, ClientUDP&);
 
-	void sendCursorPosition(common::CursorPosition&) const;
+	void sendCursorPosition(const common::CursorPosition&) const;
 	void sendStartRequest() const;
 	void sendEndRequest() const;
 	void getCurrentState();
@@ -29,9 +32,11 @@ public:
 private:
 	virtual void* start_routine();
 
-	SharedMemory& sharedMemory;
-	ClientTCP& clientTCP;
+	common::SharedMemory& sharedMemory;
+	//ClientTCP& clientTCP;
+	ClientUDP& clientUDP;
 
+	mutable common::Mutex mutex;
 };
 
 }

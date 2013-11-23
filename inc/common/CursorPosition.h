@@ -10,9 +10,12 @@ class CursorPosition
 	: public Transferable
 {
 public:
+	CursorPosition();
+	CursorPosition(int x, int y);
+
 	int x, y;
 
-	virtual void send(ISocket&);
+	virtual void send(ISocket&) const;
 	virtual void receive(ISocket&);
 };
 

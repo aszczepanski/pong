@@ -3,10 +3,24 @@
 
 using namespace common;
 
-void CursorPosition::send(ISocket&)
+CursorPosition::CursorPosition()
+	: x(300), y(300)
 {
 }
 
-void CursorPosition::receive(ISocket&)
+CursorPosition::CursorPosition(int x, int y)
+	: x(x), y(y)
 {
+}
+
+void CursorPosition::send(ISocket& socket) const
+{
+	socket.send(&x, sizeof(int));
+	socket.send(&y, sizeof(int));
+}
+
+void CursorPosition::receive(ISocket& socket)
+{
+	socket.receive(&x, sizeof(int));
+	socket.receive(&y, sizeof(int));
 }

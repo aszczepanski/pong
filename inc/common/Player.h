@@ -3,6 +3,7 @@
 
 #include <common/Transferable.h>
 #include <common/Mutex.h>
+#include <common/CursorPosition.h>
 
 namespace common
 {
@@ -19,10 +20,10 @@ public:
 	void getScore(int& score) const;
 	void setScore(int score);
 
-	virtual void send(ISocket&);
+	virtual void send(ISocket&) const;
 	virtual void receive(ISocket&);
 private:
-	int x;
+	int x, y;
 	int score;
 
 	mutable Mutex mutex;

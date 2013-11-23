@@ -15,7 +15,7 @@ public:
 	void getPosition(int& x, int& y) const;
 	void setPosition(int x, int y);
 
-	virtual void send(ISocket&);
+	virtual void send(ISocket&) const;
 	virtual void receive(ISocket&);
 private:
 	int x, y;

@@ -12,6 +12,8 @@ public:
 	IThread();
 	void run();
 	void wait();
+
+	virtual ~IThread() { }
 protected:
 	virtual void* start_routine() = 0;
 private:

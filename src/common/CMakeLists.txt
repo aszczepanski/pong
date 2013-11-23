@@ -9,9 +9,10 @@ set(COMMON_SRCS
 	IThread.cpp
 	Mutex.cpp
 	Player.cpp
+	SharedMemory.cpp
 	Transferable.cpp
 )
 
-set(CMAKE_CXX_FLAGS "-g -Wall")
+set(CMAKE_CXX_FLAGS "-g -Wall -std=c++11")
 
 add_library(common ${COMMON_SRCS})

@@ -3,10 +3,14 @@
 
 #include <common/IThread.h>
 
+namespace common
+{
+	class SharedMemory;
+}
+
 namespace client
 {
 
-class SharedMemory;
 class Communicator;
 
 class Drawer
@@ -14,12 +18,12 @@ class Drawer
 {
 
 public:
-	Drawer(SharedMemory&, Communicator&);
+	Drawer(common::SharedMemory&, Communicator&);
 
 private:
 	virtual void* start_routine();
 	
-	SharedMemory& sharedMemory;
+	common::SharedMemory& sharedMemory;
 	Communicator& communicator;
 };
 
