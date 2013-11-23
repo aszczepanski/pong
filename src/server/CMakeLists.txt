@@ -9,6 +9,7 @@ set(SERVER_SRCS
 	GameEngine.cpp
 	ServerApplication.cpp
 	ServerTCP.cpp
+	ServerTCPConnection.cpp
 	SharedMemory.cpp
 )
 
