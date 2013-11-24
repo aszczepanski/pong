@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <stdexcept>
 
 using namespace server;
 using namespace common;
@@ -65,6 +66,17 @@ void ServerUDP::receive(void* buf, size_t size) const
 	{
 		perror("recvfrom error");
 		buf = NULL;
+//		exit(1);
+	}
+}
+
+void ServerUDP::receiveNoBlock(void* buf, size_t size) const
+{
+	if (recvfrom(sock, buf, size, 0, (struct sockaddr*)&from, &fromlen) == -1)
+	{
+		perror("recvfrom error");
+		buf = NULL;
+		throw std::exception();
 //		exit(1);
 	}
 }

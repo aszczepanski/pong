@@ -30,6 +30,12 @@ void* ServerConnection::start_routine()
 	{
 		unsigned char requestCode;
 		serverSocket.receive(&requestCode, sizeof(char));
+		if (requestCode != BEGIN_MESSAGE)
+		{
+			continue;
+		}
+
+		serverSocket.receive(&requestCode, sizeof(char));
 
 		switch (requestCode)
 		{
@@ -79,12 +85,19 @@ void ServerConnection::endRequestHandler()
 
 void ServerConnection::cursorPositionRequestHandler()
 {
-	//std::cout << "REQUEST_CURSOR_POSITION received" << std::endl;
-	CursorPosition cursorPosition;
-	cursorPosition.receive(serverSocket);
-	//std::cout << "x = " << cursorPosition.x << " y = " << cursorPosition.y << std::endl;
+	try
+	{
+		//std::cout << "REQUEST_CURSOR_POSITION received" << std::endl;
+		CursorPosition cursorPosition;
+		cursorPosition.receive(serverSocket); // TODO
+		//std::cout << "x = " << cursorPosition.x << " y = " << cursorPosition.y << std::endl;
 
-	sharedMemory.setPlayerCursorPosition(cursorPosition, playerNumber);
+		sharedMemory.setPlayerCursorPosition(cursorPosition, playerNumber);
+	}
+	catch (...)
+	{
+		std::cout << "cursor position request handler" << std::endl;
+	}
 }
 
 void ServerConnection::currentStateRequestHandler()
@@ -95,6 +108,8 @@ void ServerConnection::currentStateRequestHandler()
 	
 	sharedMemory.getCurrentState(ball, player[0], player[1]);
 
+	serverSocket.send(&BEGIN_MESSAGE, 1);
+	serverSocket.send(&REQUEST_STATE, 1);
 	ball.send(serverSocket);
 	player[0].send(serverSocket);
 	player[1].send(serverSocket);
@@ -103,15 +118,14 @@ void ServerConnection::currentStateRequestHandler()
 
 void ServerConnection::gameStatusRequestHandler()
 {
-	//std::cout << "REQUEST_GAME_STATUS received" << std::endl;
-	bool started;
+	std::cout << "\t\tREQUEST_GAME_STATUS received" << std::endl;
+	bool started, ended;
 	sharedMemory.getStarted(started);
-
-	serverSocket.send(&started, sizeof(bool));
-
-	bool ended;
 	sharedMemory.getEnded(ended);
 
+	serverSocket.send(&BEGIN_MESSAGE, 1);	
+	serverSocket.send(&REQUEST_GAME_STATUS, 1);
+	serverSocket.send(&started, sizeof(bool));
 	serverSocket.send(&ended, sizeof(bool));
 
 	if (ended)

@@ -95,6 +95,18 @@ void ServerTCP::receive(void* buf, size_t size) const
 	}
 }
 
+void ServerTCP::receiveNoBlock(void* buf, size_t size) const
+{
+//	mutex.lock();
+	int st = read(in_sockfd, buf, size);
+//	mutex.unlock();
+	if (-1 == st)
+	{
+		perror("server read error");
+//		throw ReadError();
+	}
+}
+
 void ServerTCP::closeSocket()
 {
 	std::cout << "server sockfd = " << sockfd << std::endl;

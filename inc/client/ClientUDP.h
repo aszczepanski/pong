@@ -20,6 +20,7 @@ public:
 	void send(const void*, size_t) const;
 	void receive(void*, size_t) const;
 	void closeConnection();
+	virtual void receiveNoBlock(void*, size_t) const;
 private:
 	const char* hostname;
 	const char* port;

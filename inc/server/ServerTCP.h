@@ -21,6 +21,7 @@ public:
 	~ServerTCP();
 	void send(const void*, size_t) const;
 	void receive(void*, size_t) const;
+	void receiveNoBlock(void*, size_t) const;
 	void closeSocket();
 	void closeConnection();
 	IServerSocket* waitForSocket();

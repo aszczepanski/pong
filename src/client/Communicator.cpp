@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <unistd.h>
 #include <common/protocol.h>
+#include <client/Receiver.h>
 
 using namespace client;
 using namespace common;
@@ -26,6 +27,9 @@ Communicator::Communicator(SharedMemory& sharedMemory, IClientSocket& clientSock
 void* Communicator::start_routine()
 {
 	std::cout << "Communicator thread" << std::endl;
+
+	Receiver receiver(sharedMemory, clientSocket);
+	receiver.run();
 
 	bool quit = false;
 	while (!quit)
@@ -42,8 +46,9 @@ void* Communicator::start_routine()
 void Communicator::sendCursorPosition(const CursorPosition& cursorPosition) const
 {
 	mutex.lock();
-
-	clientSocket.send(&REQUEST_CURSOR_POSITION, sizeof(char));
+	
+	clientSocket.send(&BEGIN_MESSAGE, 1);
+	clientSocket.send(&REQUEST_CURSOR_POSITION, 1);
 	cursorPosition.send(clientSocket);
 
 	mutex.unlock();
@@ -53,23 +58,25 @@ void Communicator::getCurrentState()
 {
 	mutex.lock();
 
-	clientSocket.send(&REQUEST_STATE, sizeof(char));
-	static Ball ball;
-	static Player player[2];
-	static bool started, ended;
+	clientSocket.send(&BEGIN_MESSAGE, 1);
+	clientSocket.send(&REQUEST_STATE, 1);
+//	static Ball ball;
+//	static Player player[2];
+//	static bool started, ended;
 
-	ball.receive(clientSocket);
-	player[0].receive(clientSocket);
-	player[1].receive(clientSocket);
+//	ball.receive(clientSocket);
+//	player[0].receive(clientSocket);
+//	player[1].receive(clientSocket);
 
-	clientSocket.send(&REQUEST_GAME_STATUS, sizeof(char));
-	clientSocket.receive(&started, sizeof(bool));
-	clientSocket.receive(&ended, sizeof(bool));
+	clientSocket.send(&BEGIN_MESSAGE, 1);
+	clientSocket.send(&REQUEST_GAME_STATUS, 1);
+//	clientSocket.receive(&started, sizeof(bool));
+//	clientSocket.receive(&ended, sizeof(bool));
 
-	sharedMemory.setCurrentState(ball, player[0], player[1]);
+//	sharedMemory.setCurrentState(ball, player[0], player[1]);
 
-	sharedMemory.setStarted(started);
-	sharedMemory.setEnded(ended);
+//	sharedMemory.setStarted(started);
+//	sharedMemory.setEnded(ended);
 
 	mutex.unlock();
 
@@ -82,7 +89,8 @@ void Communicator::sendStartRequest() const
 {
 	mutex.lock();
 
-	clientSocket.send(&REQUEST_START, sizeof(char));
+	clientSocket.send(&BEGIN_MESSAGE, 1);
+	clientSocket.send(&REQUEST_START, 1);
 
 	mutex.unlock();
 }
@@ -91,7 +99,8 @@ void Communicator::sendEndRequest() const
 {
 	mutex.lock();
 
-	clientSocket.send(&REQUEST_END, sizeof(char));
+	clientSocket.send(&BEGIN_MESSAGE, 1);
+	clientSocket.send(&REQUEST_END, 1);
 
 	mutex.unlock();
 }

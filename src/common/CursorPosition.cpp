@@ -21,6 +21,6 @@ void CursorPosition::send(ISocket& socket) const
 
 void CursorPosition::receive(ISocket& socket)
 {
-	socket.receive(&x, sizeof(int));
-	socket.receive(&y, sizeof(int));
+	socket.receiveNoBlock(&x, sizeof(int));
+	socket.receiveNoBlock(&y, sizeof(int));
 }

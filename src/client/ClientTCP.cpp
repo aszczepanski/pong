@@ -94,3 +94,17 @@ void ClientTCP::receive(void* buf, size_t size) const
 //		throw ReadError();
 	}
 }
+
+void ClientTCP::receiveNoBlock(void* buf, size_t size) const
+{
+	assert(connectionOpened);
+//	mutex.lock();
+	int st = read(sockfd, buf, size);
+//	mutex.unlock();
+
+	if (-1 == st)
+	{
+		perror("client read error");
+//		throw ReadError();
+	}
+}

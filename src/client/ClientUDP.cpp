@@ -10,6 +10,8 @@
 #include <netdb.h>
 #include <cstdio>
 #include <cstring>
+#include <stdexcept>
+
 using namespace std;
 using namespace client;
 
@@ -60,12 +62,27 @@ void ClientUDP::receive(void* buf, size_t size) const
 {
 //	mutex.lock();
 	//int st = recvfrom(sock, buf, size, 0, (struct sockaddr*)&from, &length);
+	int st = recvfrom(sock, buf, size, 0, (struct sockaddr*)&from, &length);
+//	mutex.unlock();
+	if (-1 == st)
+	{
+		buf = NULL;
+		perror("recvfrom error");
+		//exit(0);
+	}
+}
+
+void ClientUDP::receiveNoBlock(void* buf, size_t size) const
+{
+//	mutex.lock();
+	//int st = recvfrom(sock, buf, size, 0, (struct sockaddr*)&from, &length);
 	int st = recvfrom(sock, buf, size, MSG_DONTWAIT, (struct sockaddr*)&from, &length);
 //	mutex.unlock();
 	if (-1 == st)
 	{
 		buf = NULL;
 		perror("recvfrom error");
+		throw std::exception();
 		//exit(0);
 	}
 }

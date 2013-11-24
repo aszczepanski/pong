@@ -12,6 +12,7 @@ class ISocket
 public:
 	virtual void send(const void*, size_t) const = 0;
 	virtual void receive(void*, size_t) const = 0;
+	virtual void receiveNoBlock(void*, size_t) const = 0;
 
 	virtual ~ISocket() { }
 };

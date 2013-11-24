@@ -11,8 +11,6 @@ namespace client
 {
 
 class IClientSocket;
-//class ClientTCP;
-//class ClientUDP;
 class Communicator;
 
 class ClientApplication

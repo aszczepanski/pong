@@ -15,8 +15,8 @@ void Ball::send(ISocket& socket) const
 
 void Ball::receive(ISocket& socket)
 {
-	socket.receive(&x, sizeof(int));
-	socket.receive(&y, sizeof(int));
+	socket.receiveNoBlock(&x, sizeof(int));
+	socket.receiveNoBlock(&y, sizeof(int));
 }
 
 void Ball::getPosition(int& x, int& y) const

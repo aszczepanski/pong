@@ -15,7 +15,7 @@
 using namespace server;
 using namespace common;
 
-#define ONLY_SERVER
+#define SERVER_ONLY
 
 int main(int argc, char* argv[])
 {
@@ -43,6 +43,7 @@ void ServerApplication::start()
 	std::cout << "starting server application" << std::endl;
 
 #ifndef SERVER_ONLY
+	std::cout << "here\n";
 	IServerSocket* tmpServer = serverSocket.waitForSocket();
 	serverConnection = new ServerConnection(*tmpServer, sharedMemory, 1);
 	serverConnection->run();
@@ -60,13 +61,13 @@ void ServerApplication::start()
 
 	gameEngine.wait();
 
-#ifndef ONLY_SERVER
+#ifndef SERVER_ONLY
 	serverConnection->wait();
 #endif
 
 	drawer.wait();
 
-#ifndef ONLY_SERVER
+#ifndef SERVER_ONLY
 	delete tmpServer;
 	tmpServer = NULL;
 #endif
