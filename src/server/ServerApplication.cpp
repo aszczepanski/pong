@@ -38,19 +38,21 @@ void ServerApplication::start()
 
 	unsigned char c;
 	ServerUDP tmpServerUDP = serverUDP.waitForSocket(&c, sizeof(char));
-	serverTCPConnection[0] = new ServerTCPConnection(tmpServerUDP, sharedMemory);
+	serverTCPConnection[0] = new ServerTCPConnection(tmpServerUDP, sharedMemory, 0);
 	serverTCPConnection[0]->run();
-/*	
-	tmpServerTCP = serverTCP.waitForSocket();
-	serverTCPConnection[1] = new ServerTCPConnection(tmpServerTCP, sharedMemory);
-	serverTCPConnection[1]->run();
-*/
+	
+//	ServerUDP tmpServerUDP2 = serverUDP.waitForSocket(&c, sizeof(char));
+//	serverTCPConnection[1] = new ServerTCPConnection(tmpServerUDP2, sharedMemory, 1);
+//	serverTCPConnection[1]->run();
+
 
 	gameEngine.run();
 
 	gameEngine.wait();
 
 	serverTCPConnection[0]->wait();
+
+//	serverTCPConnection[1]->wait();
 
 	std::cout << "stopping server application" << std::endl;
 }

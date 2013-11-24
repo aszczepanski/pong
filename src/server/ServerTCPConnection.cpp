@@ -8,13 +8,15 @@
 #include <cstddef>
 #include <common/protocol.h>
 #include <iostream>
+#include <cassert>
 
 using namespace server;
 using namespace common;
 
-ServerTCPConnection::ServerTCPConnection(ServerUDP serverUDP, SharedMemory& sharedMemory)
-	: serverUDP(serverUDP), sharedMemory(sharedMemory)
+ServerTCPConnection::ServerTCPConnection(ServerUDP serverUDP, SharedMemory& sharedMemory, int playerNumber)
+	: serverUDP(serverUDP), sharedMemory(sharedMemory), playerNumber(playerNumber)
 {
+	assert(playerNumber == 0 || playerNumber == 1);
 }
 
 void* ServerTCPConnection::start_routine()
@@ -81,7 +83,7 @@ void ServerTCPConnection::cursorPositionRequestHandler()
 	cursorPosition.receive(serverUDP);
 	//std::cout << "x = " << cursorPosition.x << " y = " << cursorPosition.y << std::endl;
 
-	sharedMemory.setPlayerCursorPosition(cursorPosition, 0);
+	sharedMemory.setPlayerCursorPosition(cursorPosition, playerNumber);
 }
 
 void ServerTCPConnection::currentStateRequestHandler()
@@ -91,12 +93,6 @@ void ServerTCPConnection::currentStateRequestHandler()
 	static Player player[2];
 	
 	sharedMemory.getCurrentState(ball, player[0], player[1]);
-
-	int px, py;
-//	ball.getPosition(px, py);
-
-//	serverTCP.send(&px, sizeof(int));
-//	serverTCP.send(&py, sizeof(int));
 
 	ball.send(serverUDP);
 	player[0].send(serverUDP);

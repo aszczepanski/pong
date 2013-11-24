@@ -17,7 +17,7 @@ class ServerTCPConnection
 	: public common::IThread
 {
 public:
-	ServerTCPConnection(ServerUDP, common::SharedMemory&);
+	ServerTCPConnection(ServerUDP, common::SharedMemory&, int playerNumber);
 
 private:
 	virtual void* start_routine();
@@ -30,6 +30,8 @@ private:
 
 	ServerUDP serverUDP;
 	common::SharedMemory& sharedMemory;
+
+	const int playerNumber;
 };
 
 }

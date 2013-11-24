@@ -113,7 +113,7 @@ void* GameEngine::start_routine()
 		b2Vec2 topPlayerPosition = topPlayerBody->GetPosition();
 		sharedMemory.getPlayerCursorPosition(cursorPosition[1], 1);
 		b2Vec2 topPlayerLinearVelocity(30.0f*(cursorPosition[1].x / 100.0f - topPlayerPosition.x), 0.0f);
-		//topPlayerBody->SetLinearVelocity(topPlayerLinearVelocity);
+		topPlayerBody->SetLinearVelocity(topPlayerLinearVelocity);
 
 		// update world
 		world.Step(timeStep, velocityIterations, positionIterations);
