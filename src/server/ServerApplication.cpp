@@ -15,7 +15,7 @@
 using namespace server;
 using namespace common;
 
-//#define SERVER_ONLY
+#define SERVER_ONLY
 
 int main(int argc, char* argv[])
 {

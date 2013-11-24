@@ -1,4 +1,6 @@
 #include <common/Camera.h>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 using namespace common;
 using namespace cv;
@@ -26,9 +28,38 @@ void Camera::getPosition(int& position) const
   position = this->position;
 }
 
-void Camera::setPosition(int position)
+int Camera::getCenter(Mat &input) const
 {
-  this->position = position;
+  int largest_area, largest_contour_index = 0;
+  Rect bounding_rect;
+
+  blur(input, input, Size(5, 5));
+  processInput(input);
+
+  Canny(input, input, 20, 100, 3);
+
+  vector<vector<Point> > contours;
+  vector<Vec4i> hierarchy;
+
+  findContours(input, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
+
+  if (contours.size() > 0)
+  {
+    for (int i = 0; i < contours.size(); i++ )
+    {
+      double a = contourArea(contours[i], false);
+      if (a > largest_area)
+      {
+        largest_area = a;
+        largest_contour_index=i;
+        bounding_rect=boundingRect(contours[i]);
+      }
+    }
+    Moments mu = moments(contours[largest_contour_index], false);
+    Point2f center = Point2f(mu.m10/mu.m00 , mu.m01/mu.m00);
+    return int(center.x);
+  }
+  return 0;
 }
 
 void Camera::processInput(Mat &input) const
@@ -95,6 +126,8 @@ int Camera::configure()
 
   CvCapture *camCapture = NULL;
   bool configuring = true;
+
+  camera_handle = camCapture;
 
   // camera init
   if (!(camCapture = cvCaptureFromCAM(CV_CAP_ANY))) {
@@ -193,7 +226,7 @@ int Camera::configure()
 
   cvDestroyAllWindows();
 
-  setPosition(11);
+  position = getCenter(input);
 
   return 0;
 }
