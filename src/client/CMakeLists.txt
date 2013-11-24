@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
 set(LIBS common)
-set(LIBS ${LIBS} pthread SDL2)
+set(LIBS ${LIBS} pthread SDL2 opencv_core opencv_highgui opencv_imgproc)
 
 set(CLIENT_SRCS
 	ClientApplication.cpp
