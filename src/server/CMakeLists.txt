@@ -6,11 +6,13 @@ set(LIBS common)
 set(LIBS ${LIBS} pthread Box2D SDL2 opencv_core opencv_highgui opencv_imgproc)
 
 set(SERVER_SRCS
-	GameEngine.cpp
-	ServerApplication.cpp
-	ServerTCP.cpp
-	ServerTCPConnection.cpp
-	ServerUDP.cpp
+  Communicator.cpp
+  GameEngine.cpp
+  IServerSocket.cpp
+  ServerApplication.cpp
+  ServerConnection.cpp
+  ServerTCP.cpp
+  ServerUDP.cpp
 )
 
 link_directories(${PROJECT_SOURCE_DIR}/lib)

@@ -23,7 +23,6 @@ void* Drawer::start_routine()
 	camera.getPosition(x);
 	printf("your position is: %d\n", x);
 
-
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
 	{
 		std::cout << SDL_GetError() << std::endl;
