@@ -31,10 +31,11 @@ public:
   void setHSV(HSV hsv);
 
   void getPosition(int& position) const;
-  void setPosition(int position);
 
   void initTrackbars();
   void processInput(cv::Mat &input) const;
+
+  int getCenter(cv::Mat &input) const;
 
   static void measureHand(int event, int x, int y, int flags, void* param);
 

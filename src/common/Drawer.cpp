@@ -16,11 +16,6 @@ Drawer::Drawer(SharedMemory& sharedMemory, ICommunicator& communicator, Camera& 
 
 void* Drawer::start_routine()
 {
-	std::cout << "Drawer thread" << std::endl;
-
-	HSV hsv;
-	camera.getHSV(hsv);
-	std::cout << hsv.h_min << std::endl;
 
  	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
  	{
