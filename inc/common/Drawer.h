@@ -2,6 +2,7 @@
 #define DRAWER_H
 
 #include <common/IThread.h>
+#include <common/Camera.h>
 
 namespace common
 {
@@ -14,13 +15,14 @@ class Drawer
 {
 
 public:
-	Drawer(common::SharedMemory&, ICommunicator&);
+	Drawer(common::SharedMemory&, ICommunicator&, Camera&);
 
 private:
 	virtual void* start_routine();
 
 	common::SharedMemory& sharedMemory;
 	ICommunicator& communicator;
+  Camera camera;
 };
 
 }

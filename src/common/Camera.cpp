@@ -1,6 +1,7 @@
 #include <common/Camera.h>
 
 using namespace common;
+using namespace cv;
 
 Camera::Camera()
 {
@@ -29,7 +30,23 @@ void Camera::setPosition(int position)
   this->position = position;
 }
 
-void Camera::configure()
+int Camera::configure()
 {
+
+  Mat input, original;
+
+  CvCapture *camCapture = this->camera_handle;
+  int ret = 0;
+  bool configuring = true;
+
+  // camera init
+  if (!(camCapture = cvCaptureFromCAM(CV_CAP_ANY))) {
+    std::cout << "LOG: Failed to capture from camera\n";
+    return -1;
+  }
+  std::cout << "LOG: Everything is fine\n";
+
   this->setPosition(11);
+
+  return 0;
 }

@@ -26,7 +26,7 @@ public:
   void getPosition(int& position) const;
   void setPosition(int position);
 
-  void configure();
+  int configure();
 
 private:
   int position;
@@ -34,7 +34,7 @@ private:
   int screen_width;
   bool drag_drop;
   cv::string main_window;
-
+  CvCapture *camera_handle;
 };
 
 }

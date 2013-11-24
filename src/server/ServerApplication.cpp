@@ -7,6 +7,7 @@
 #include <server/Communicator.h>
 #include <common/SharedMemory.h>
 #include <common/Drawer.h>
+#include <common/Camera.h>
 #include <iostream>
 #include <cstddef>
 #include <unistd.h>
@@ -39,12 +40,15 @@ void ServerApplication::start()
 {
 	std::cout << "starting server application" << std::endl;
 
-	IServerSocket* tmpServer = serverSocket.waitForSocket();
-	serverConnection = new ServerConnection(*tmpServer, sharedMemory, 1);
-	serverConnection->run();
+	// IServerSocket* tmpServer = serverSocket.waitForSocket();
+	// serverConnection = new ServerConnection(*tmpServer, sharedMemory, 1);
+	// serverConnection->run();
+
+	Camera camera;
+	camera.configure();
 
 	Communicator communicator(sharedMemory);
-	Drawer drawer(sharedMemory, communicator);
+	Drawer drawer(sharedMemory, communicator, camera);
 
 	drawer.run();
 
@@ -56,8 +60,8 @@ void ServerApplication::start()
 
 	drawer.wait();
 
-	delete tmpServer;
-	tmpServer = NULL;
+	// delete tmpServer;
+	// tmpServer = NULL;
 
 	std::cout << "stopping server application" << std::endl;
 }

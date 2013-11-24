@@ -26,7 +26,11 @@ int main(int argc, char* argv[])
 	clientUDP.send(&c, sizeof(char));
 	SharedMemory sharedMemory;
 	Communicator communicator(sharedMemory, clientUDP);
-	Drawer drawer(sharedMemory, communicator);
+
+	Camera camera;
+	camera.configure();
+
+	Drawer drawer(sharedMemory, communicator, camera);
 
 	ClientApplication clientApplication(sharedMemory, drawer, clientUDP, communicator);
 	clientApplication.start();
