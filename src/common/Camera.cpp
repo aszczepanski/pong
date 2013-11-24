@@ -31,6 +31,22 @@ void Camera::setPosition(int position)
   this->position = position;
 }
 
+void Camera::processInput(Mat &input) const
+{
+  // Mat erodeElement = getStructuringElement( MORPH_RECT,Size(3,3));
+  // Mat dilateElement = getStructuringElement( MORPH_RECT,Size(8,8));
+  Mat hsv_mat;
+
+  cv::cvtColor(input, hsv_mat, COLOR_BGR2HSV);
+
+  inRange(hsv_mat, Scalar(hsv.h_min, hsv.s_min, hsv.s_min), Scalar(hsv.h_max, hsv.s_max, hsv.v_max), input);
+
+  // erode(input, input, erodeElement);
+  // erode(input, input, erodeElement);
+  // dilate(input, input, dilateElement);
+  // dilate(input, input, dilateElement);
+}
+
 void Camera::initTrackbars()
 {
   char TrackbarName[50];
@@ -166,7 +182,7 @@ int Camera::configure()
   backup = input.clone();
 
   while (configuring) {
-    // process_input(input);
+    processInput(input);
     imshow(main_window, input);
     input = backup.clone();
 

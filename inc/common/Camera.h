@@ -34,6 +34,7 @@ public:
   void setPosition(int position);
 
   void initTrackbars();
+  void processInput(cv::Mat &input) const;
 
   static void measureHand(int event, int x, int y, int flags, void* param);
 
