@@ -59,12 +59,13 @@ void ClientUDP::send(const void* msg, size_t size) const
 void ClientUDP::receive(void* buf, size_t size) const
 {
 //	mutex.lock();
-	int st = recvfrom(sock, buf, size, 0, (struct sockaddr*)&from, &length);
+	//int st = recvfrom(sock, buf, size, 0, (struct sockaddr*)&from, &length);
+	int st = recvfrom(sock, buf, size, MSG_DONTWAIT, (struct sockaddr*)&from, &length);
 //	mutex.unlock();
 	if (-1 == st)
 	{
 		buf = NULL;
 		perror("recvfrom error");
-		exit(0);
+		//exit(0);
 	}
 }

@@ -15,6 +15,8 @@
 using namespace server;
 using namespace common;
 
+#define ONLY_SERVER
+
 int main(int argc, char* argv[])
 {
 	std::cout << "Hello pong!" << std::endl;
@@ -40,9 +42,11 @@ void ServerApplication::start()
 {
 	std::cout << "starting server application" << std::endl;
 
-	// IServerSocket* tmpServer = serverSocket.waitForSocket();
-	// serverConnection = new ServerConnection(*tmpServer, sharedMemory, 1);
-	// serverConnection->run();
+#ifndef SERVER_ONLY
+	IServerSocket* tmpServer = serverSocket.waitForSocket();
+	serverConnection = new ServerConnection(*tmpServer, sharedMemory, 1);
+	serverConnection->run();
+#endif
 
 	Camera camera;
 	camera.configure();
@@ -56,12 +60,16 @@ void ServerApplication::start()
 
 	gameEngine.wait();
 
-	// serverConnection->wait();
+#ifndef ONLY_SERVER
+	serverConnection->wait();
+#endif
 
 	drawer.wait();
 
-	// delete tmpServer;
-	// tmpServer = NULL;
+#ifndef ONLY_SERVER
+	delete tmpServer;
+	tmpServer = NULL;
+#endif
 
 	std::cout << "stopping server application" << std::endl;
 }
