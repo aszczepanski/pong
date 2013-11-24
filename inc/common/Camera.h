@@ -15,6 +15,13 @@ struct HSV
   int h_min, h_max, s_min, s_max, v_min, v_max;
 };
 
+struct Drawing
+{
+  CvPoint point;
+  int radius;
+  bool drag_drop;
+};
+
 class Camera
 {
 public:
@@ -26,13 +33,14 @@ public:
   void getPosition(int& position) const;
   void setPosition(int position);
 
+  static void measureHand(int event, int x, int y, int flags, void* param);
+
   int configure();
 
 private:
   int position;
   HSV hsv;
   int screen_width;
-  bool drag_drop;
   cv::string main_window;
   CvCapture *camera_handle;
 };
