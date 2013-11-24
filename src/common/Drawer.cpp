@@ -2,7 +2,7 @@
 #include <common/SharedMemory.h>
 #include <common/ICommunicator.h>
 #include <common/CursorPosition.h>
-#include <common/camera.h>
+#include <common/Camera.h>
 #include <iostream>
 #include <SDL2/SDL.h>
 

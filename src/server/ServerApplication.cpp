@@ -56,7 +56,7 @@ void ServerApplication::start()
 
 	gameEngine.wait();
 
-	serverConnection->wait();
+	// serverConnection->wait();
 
 	drawer.wait();
 
