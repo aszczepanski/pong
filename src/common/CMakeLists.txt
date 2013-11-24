@@ -4,6 +4,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 set(COMMON_SRCS
 	Ball.cpp
+  Camera.cpp
 	CursorPosition.cpp
 	ISocket.cpp
 	IThread.cpp

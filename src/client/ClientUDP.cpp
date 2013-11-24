@@ -22,7 +22,7 @@ ClientUDP::ClientUDP(const char* hostname, const char* port)
 		perror("socket error");
 		exit(0);
 	}
-	
+
 	server.sin_family = AF_INET;
 	hp = gethostbyname(hostname);
 	if (hp == 0)

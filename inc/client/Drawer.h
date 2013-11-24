@@ -22,7 +22,7 @@ public:
 
 private:
 	virtual void* start_routine();
-	
+
 	common::SharedMemory& sharedMemory;
 	Communicator& communicator;
 };

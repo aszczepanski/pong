@@ -95,7 +95,7 @@ void SharedMemory::setPlayer(const common::Player& player, int nr)
 void SharedMemory::getStarted(bool& started) const
 {
 	mutex.lock();
-	
+
 	started = this->started;
 
 	mutex.unlock();
