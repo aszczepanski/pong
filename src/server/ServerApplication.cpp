@@ -11,18 +11,19 @@
 #include <iostream>
 #include <cstddef>
 #include <unistd.h>
+#include <common/protocol.h>
 
 using namespace server;
 using namespace common;
 
-//#define SERVER_ONLY
+#define SERVER_ONLY
 
 int main(int argc, char* argv[])
 {
 	std::cout << "Hello pong!" << std::endl;
 
-	//ServerTCP serverTCP("6060");
-	ServerUDP serverUDP("6060");
+	//ServerTCP serverTCP(port.c_str());
+	ServerUDP serverUDP(port.c_str());
 	SharedMemory sharedMemory;
 	GameEngine gameEngine(sharedMemory);
 
@@ -43,14 +44,13 @@ void ServerApplication::start()
 	std::cout << "starting server application" << std::endl;
 
 #ifndef SERVER_ONLY
-	std::cout << "here\n";
 	IServerSocket* tmpServer = serverSocket.waitForSocket();
 	serverConnection = new ServerConnection(*tmpServer, sharedMemory, 1);
 	serverConnection->run();
 #endif
 
 	Camera camera;
-	camera.configure();
+//	camera.configure();
 
 	Communicator communicator(sharedMemory);
 	Drawer drawer(sharedMemory, communicator, camera);

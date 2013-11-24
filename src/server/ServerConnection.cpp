@@ -23,7 +23,6 @@ ServerConnection::ServerConnection(IServerSocket& serverSocket, SharedMemory& sh
 void* ServerConnection::start_routine()
 {
 
-	// TODO
 	bool quit = false;
 	bool informedAboutQuit = false;
 	while (!quit || !informedAboutQuit)
@@ -35,32 +34,40 @@ void* ServerConnection::start_routine()
 			continue;
 		}
 
-		serverSocket.receive(&requestCode, sizeof(char));
-
-		switch (requestCode)
+		try
 		{
-		case REQUEST_START:
-			startRequestHandler();
-			break;
-		case REQUEST_CURSOR_POSITION:
-			cursorPositionRequestHandler();
-			break;
-		case REQUEST_STATE:
-			currentStateRequestHandler();
-			break;
-		case REQUEST_GAME_STATUS:
-			quit = gameStatusRequestHandler();
-			if (quit)
+			serverSocket.receiveNoBlock(&requestCode, sizeof(char));
+
+			switch (requestCode)
 			{
-				informedAboutQuit = true;
-				std::cout << "informed\n";
+			case REQUEST_START:
+				startRequestHandler();
+				break;
+			case REQUEST_CURSOR_POSITION:
+				cursorPositionRequestHandler();
+				break;
+			case REQUEST_STATE:
+				currentStateRequestHandler();
+				break;
+			case REQUEST_GAME_STATUS:
+				quit = gameStatusRequestHandler();
+				if (quit)
+				{
+					informedAboutQuit = true;
+					std::cout << "informed\n";
+				}
+				break;
+			case REQUEST_END:
+				endRequestHandler();
+				break;
+			default:
+				std::cout << "unsupported request received" << std::endl;
 			}
-			break;
-		case REQUEST_END:
-			endRequestHandler();
-			break;
-		default:
-			std::cout << "unsupported request received" << std::endl;
+
+		}
+		catch(...)
+		{
+			std::cout << "request code exception" << std::endl;
 		}
 
 		sharedMemory.getEnded(quit);
@@ -96,7 +103,7 @@ void ServerConnection::cursorPositionRequestHandler()
 	}
 	catch (...)
 	{
-		std::cout << "cursor position request handler" << std::endl;
+		std::cout << "cursor position request handler exception" << std::endl;
 	}
 }
 
@@ -118,22 +125,14 @@ void ServerConnection::currentStateRequestHandler()
 
 bool ServerConnection::gameStatusRequestHandler()
 {
-	std::cout << "\t\tREQUEST_GAME_STATUS received" << std::endl;
+	//std::cout << "\t\tREQUEST_GAME_STATUS received" << std::endl;
 	bool started, ended;
 	sharedMemory.getStarted(started);
 	sharedMemory.getEnded(ended);
 
-	Ball ball;
-	Player player[2];
-	
-	sharedMemory.getCurrentState(ball, player[0], player[1]);
-
 	serverSocket.send(&BEGIN_MESSAGE, 1);	
 	serverSocket.send(&REQUEST_GAME_STATUS, 1);
 
-	ball.send(serverSocket);
-	player[0].send(serverSocket);
-	player[1].send(serverSocket);
 	serverSocket.send(&started, sizeof(bool));
 	serverSocket.send(&ended, sizeof(bool));
 

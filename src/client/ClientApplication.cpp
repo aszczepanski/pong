@@ -7,6 +7,7 @@
 #include <client/Communicator.h>
 #include <iostream>
 #include <string>
+#include <common/protocol.h>
 
 using namespace client;
 using namespace common;
@@ -21,7 +22,7 @@ int main(int argc, char* argv[])
 		host = argv[1];
 	}
 
-	ClientUDP clientUDP(host.c_str(), "6060");
+	ClientUDP clientUDP(host.c_str(), port.c_str());
 	unsigned char c = 'c';
 	clientUDP.send(&c, sizeof(char));
 	SharedMemory sharedMemory;

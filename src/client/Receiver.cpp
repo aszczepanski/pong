@@ -60,19 +60,10 @@ void* Receiver::start_routine()
 void Receiver::gameStatusRequestHandler()
 {
 	bool started, ended;
-	Ball ball;
-	Player player[2];
-	// TODO
 	try
 	{
-		ball.receive(socket);
-		player[0].receive(socket);
-		player[1].receive(socket);
-
 		socket.receiveNoBlock(&started, sizeof(bool));
 		socket.receiveNoBlock(&ended, sizeof(bool));
-
-		sharedMemory.setCurrentState(ball, player[0], player[1]);
 
 		sharedMemory.setStarted(started);
 		sharedMemory.setEnded(ended);
