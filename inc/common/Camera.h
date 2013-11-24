@@ -33,6 +33,8 @@ public:
   void getPosition(int& position) const;
   void setPosition(int position);
 
+  void initTrackbars();
+
   static void measureHand(int event, int x, int y, int flags, void* param);
 
   int configure();

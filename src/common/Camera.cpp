@@ -31,6 +31,24 @@ void Camera::setPosition(int position)
   this->position = position;
 }
 
+void Camera::initTrackbars()
+{
+  char TrackbarName[50];
+  sprintf(TrackbarName, "H (min) %d", hsv.h_min);
+  sprintf(TrackbarName, "H (max) %d", hsv.h_max);
+  sprintf(TrackbarName, "S (min) %d", hsv.s_min);
+  sprintf(TrackbarName, "S (max) %d", hsv.s_max);
+  sprintf(TrackbarName, "V (min) %d", hsv.v_min);
+  sprintf(TrackbarName, "V (max) %d", hsv.v_max);
+
+  createTrackbar("H (min)", main_window, &hsv.h_min, 255, NULL);
+  createTrackbar("H (max)", main_window, &hsv.h_max, 255, NULL);
+  createTrackbar("S (min)", main_window, &hsv.s_min, 255, NULL);
+  createTrackbar("S (max)", main_window, &hsv.s_max, 255, NULL);
+  createTrackbar("V (min)", main_window, &hsv.v_min, 255, NULL);
+  createTrackbar("V (max)", main_window, &hsv.v_max, 255, NULL);
+}
+
 void Camera::measureHand(int event, int x, int y, int flags, void* param)
 {
   Drawing* obj = (Drawing*) param;
@@ -111,6 +129,51 @@ int Camera::configure()
     }
   }
   cvReleaseCapture(&camCapture);
+
+  // second step(2) starts here - init HSV values
+  input = original.clone();
+  cvtColor(input, original, COLOR_BGR2HSV);
+
+  int h = 0, s = 0, v = 0, count = 0, offset = 30;
+  Vec3d pixel;
+
+  int pt_x = obj.point.x, pt_y = obj.point.y, pt_r = obj.radius;
+
+  for(int x = pt_x - pt_r; x < pt_x + pt_r; x++)
+  {
+    for(int y = pt_y - pt_r; y < pt_y + pt_r; y++)
+    {
+      Vec3b bgrPixel = original.at<Vec3b>(y, x);
+      h += (int)bgrPixel[0];
+      s += (int)bgrPixel[1];
+      v += (int)bgrPixel[2];
+      count++;
+    }
+  }
+
+  h /= count; s /= count; v /= count;
+
+  hsv.h_min = max(0, h - offset); hsv.h_max = min(255, h + offset);
+  hsv.s_min = max(0, s - offset); hsv.s_max = min(255, s + offset);
+  hsv.v_min = max(0, v - offset); hsv.v_max = min(255, v + offset);
+
+
+  // third step - show image
+  configuring = true;
+  initTrackbars();
+
+  Mat backup;
+  backup = input.clone();
+
+  while (configuring) {
+    // process_input(input);
+    imshow(main_window, input);
+    input = backup.clone();
+
+    if (cvWaitKey(30) != -1) {
+      configuring = false;
+    }
+  }
 
   cvDestroyAllWindows();
 
