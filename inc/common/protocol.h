@@ -14,7 +14,7 @@ const std::string port = "6060";
  *
  */
 
-const unsigned char BEGIN_MESSAGE = 0x00;
+const unsigned char BEGIN_MESSAGE = 0xAB;
 
 const unsigned char REQUEST_START = 0x10;
 const unsigned char REQUEST_END = 0x11;

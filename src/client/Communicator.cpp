@@ -58,8 +58,8 @@ void Communicator::getCurrentState()
 {
 	mutex.lock();
 
-	clientSocket.send(&BEGIN_MESSAGE, 1);
-	clientSocket.send(&REQUEST_STATE, 1);
+//	clientSocket.send(&BEGIN_MESSAGE, 1);
+//	clientSocket.send(&REQUEST_STATE, 1);
 //	static Ball ball;
 //	static Player player[2];
 //	static bool started, ended;

@@ -31,7 +31,7 @@ void* Receiver::start_routine()
 
 		try
 		{
-			socket.receive(&requestCode, 1);
+			socket.receiveNoBlock(&requestCode, 1);
 			switch(requestCode)
 			{
 			case REQUEST_GAME_STATUS:
@@ -60,16 +60,27 @@ void* Receiver::start_routine()
 void Receiver::gameStatusRequestHandler()
 {
 	bool started, ended;
+	Ball ball;
+	Player player[2];
 	// TODO
 	try
 	{
-//		usleep(500);
-		socket.receive(&started, sizeof(bool));
-//		usleep(500);
-		socket.receive(&ended, sizeof(bool));
+		ball.receive(socket);
+		player[0].receive(socket);
+		player[1].receive(socket);
+
+		socket.receiveNoBlock(&started, sizeof(bool));
+		socket.receiveNoBlock(&ended, sizeof(bool));
+
+		sharedMemory.setCurrentState(ball, player[0], player[1]);
 
 		sharedMemory.setStarted(started);
 		sharedMemory.setEnded(ended);
+
+		if (ended)
+		{
+			std::cout << "ended\n";
+		}
 	}
 	catch (...)
 	{
@@ -84,11 +95,8 @@ void Receiver::stateRequestHandler()
 
 	try
 	{
-//		usleep(2000);
 		ball.receive(socket);
-//		usleep(2000);
 		player[0].receive(socket);
-//		usleep(2000);
 		player[1].receive(socket);
 
 		sharedMemory.setCurrentState(ball, player[0], player[1]);

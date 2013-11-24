@@ -25,7 +25,7 @@ private:
 	void endRequestHandler();
 	void cursorPositionRequestHandler();
 	void currentStateRequestHandler();
-	void gameStatusRequestHandler();
+	bool gameStatusRequestHandler();
 
 	IServerSocket& serverSocket;
 	common::SharedMemory& sharedMemory;

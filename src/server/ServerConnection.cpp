@@ -49,7 +49,7 @@ void* ServerConnection::start_routine()
 			currentStateRequestHandler();
 			break;
 		case REQUEST_GAME_STATUS:
-			gameStatusRequestHandler();
+			quit = gameStatusRequestHandler();
 			if (quit)
 			{
 				informedAboutQuit = true;
@@ -116,18 +116,29 @@ void ServerConnection::currentStateRequestHandler()
 
 }
 
-void ServerConnection::gameStatusRequestHandler()
+bool ServerConnection::gameStatusRequestHandler()
 {
 	std::cout << "\t\tREQUEST_GAME_STATUS received" << std::endl;
 	bool started, ended;
 	sharedMemory.getStarted(started);
 	sharedMemory.getEnded(ended);
 
+	Ball ball;
+	Player player[2];
+	
+	sharedMemory.getCurrentState(ball, player[0], player[1]);
+
 	serverSocket.send(&BEGIN_MESSAGE, 1);	
 	serverSocket.send(&REQUEST_GAME_STATUS, 1);
+
+	ball.send(serverSocket);
+	player[0].send(serverSocket);
+	player[1].send(serverSocket);
 	serverSocket.send(&started, sizeof(bool));
 	serverSocket.send(&ended, sizeof(bool));
 
 	if (ended)
 		std::cout << "quit" << std::endl;
+
+	return ended;
 }
