@@ -18,7 +18,7 @@ public:
 
 private:
 	virtual void* start_routine();
-	
+
 	common::SharedMemory& sharedMemory;
 	ICommunicator& communicator;
 };

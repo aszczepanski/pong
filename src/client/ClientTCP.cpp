@@ -22,11 +22,11 @@ ClientTCP::ClientTCP(const string& hostname, const string& port)
 		perror("client socket error");
 //		throw SocketError();
 	}
-	
+
 	sockaddr_in addr;
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(atoi(port.c_str()));
-	
+
 	if (inet_aton(hostname.c_str(), (in_addr*)&addr.sin_addr.s_addr) == 0)
 	{
 		perror("client aton error");

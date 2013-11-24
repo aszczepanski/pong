@@ -1,4 +1,5 @@
 #include <common/Drawer.h>
+#include <common/Camera.h>
 #include <common/SharedMemory.h>
 #include <common/ICommunicator.h>
 #include <common/CursorPosition.h>
@@ -15,6 +16,12 @@ Drawer::Drawer(SharedMemory& sharedMemory, ICommunicator& communicator)
 void* Drawer::start_routine()
 {
 	std::cout << "Drawer thread" << std::endl;
+
+	Camera camera;
+	int x;
+	camera.configure();
+	camera.getPosition(x);
+	printf("your position is: %d\n", x);
 
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
