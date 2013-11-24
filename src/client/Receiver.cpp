@@ -63,9 +63,10 @@ void Receiver::gameStatusRequestHandler()
 	// TODO
 	try
 	{
-		usleep(100);
-		socket.receiveNoBlock(&started, sizeof(bool));
-		socket.receiveNoBlock(&ended, sizeof(bool));
+//		usleep(500);
+		socket.receive(&started, sizeof(bool));
+//		usleep(500);
+		socket.receive(&ended, sizeof(bool));
 
 		sharedMemory.setStarted(started);
 		sharedMemory.setEnded(ended);
@@ -83,8 +84,11 @@ void Receiver::stateRequestHandler()
 
 	try
 	{
+//		usleep(2000);
 		ball.receive(socket);
+//		usleep(2000);
 		player[0].receive(socket);
+//		usleep(2000);
 		player[1].receive(socket);
 
 		sharedMemory.setCurrentState(ball, player[0], player[1]);

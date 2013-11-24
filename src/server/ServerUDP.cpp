@@ -2,6 +2,7 @@
 #include <server/IServerSocket.h>
 #include <cstdio>
 #include <sys/socket.h>
+#include <sys/select.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -72,12 +73,34 @@ void ServerUDP::receive(void* buf, size_t size) const
 
 void ServerUDP::receiveNoBlock(void* buf, size_t size) const
 {
-	if (recvfrom(sock, buf, size, 0, (struct sockaddr*)&from, &fromlen) == -1)
+	fd_set masterfds, readfds;
+	FD_ZERO(&masterfds);
+	FD_SET(sock, &masterfds);
+	memcpy(&readfds,&masterfds,sizeof(fd_set));
+	timeval timeout;
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 1000;
+	if (select(sock+1, &readfds, NULL, NULL, &timeout) < 0)
 	{
-		perror("recvfrom error");
-		buf = NULL;
+		printf("select error");
+		exit(1);
+	}
+
+	if (FD_ISSET(sock, &readfds))
+	{
+//		printf("Read from socket\n");
+		if (recvfrom(sock, buf, size, 0, (struct sockaddr*)&from, &fromlen) == -1)
+		{
+			perror("recvfrom error");
+			buf = NULL;
+//			exit(1);
+		}
+	}
+	else
+	{
+		printf("socket timedout\n");
+		//printf("Socket timeout started=%d\n",packets_started);
 		throw std::exception();
-//		exit(1);
 	}
 }
 

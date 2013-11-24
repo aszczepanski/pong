@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 	Communicator communicator(sharedMemory, clientUDP);
 
 	Camera camera;
-	camera.configure();
+//	camera.configure();
 
 	Drawer drawer(sharedMemory, communicator, camera);
 

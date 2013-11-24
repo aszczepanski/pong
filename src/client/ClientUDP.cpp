@@ -74,15 +74,37 @@ void ClientUDP::receive(void* buf, size_t size) const
 
 void ClientUDP::receiveNoBlock(void* buf, size_t size) const
 {
-//	mutex.lock();
-	//int st = recvfrom(sock, buf, size, 0, (struct sockaddr*)&from, &length);
-	int st = recvfrom(sock, buf, size, MSG_DONTWAIT, (struct sockaddr*)&from, &length);
-//	mutex.unlock();
-	if (-1 == st)
+	fd_set masterfds, readfds;
+	FD_ZERO(&masterfds);
+	FD_SET(sock, &masterfds);
+	memcpy(&readfds,&masterfds,sizeof(fd_set));
+	timeval timeout;
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 1000;
+	if (select(sock+1, &readfds, NULL, NULL, &timeout) < 0)
 	{
-		buf = NULL;
-		perror("recvfrom error");
-		throw std::exception();
-		//exit(0);
+		printf("select error");
+		exit(1);
 	}
+
+	if (FD_ISSET(sock, &readfds))
+	{
+//		printf("Read from socket\n");
+//		mutex.lock();
+		int st = recvfrom(sock, buf, size, 0, (struct sockaddr*)&from, &length);
+//		mutex.unlock();
+		if (-1 == st)
+		{
+			buf = NULL;
+			perror("recvfrom error");
+			//exit(0);
+		}
+	}
+	else
+	{
+		printf("socket timedout\n");
+		//printf("Socket timeout started=%d\n",packets_started);
+		throw std::exception();
+	}
+
 }
