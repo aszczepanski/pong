@@ -82,9 +82,9 @@ void ServerUDP::closeMainConnection()
 
 IServerSocket* ServerUDP::waitForSocket()
 {
-	void* buf;
+	unsigned char buf;
 	size_t size = 1;
-	if (recvfrom(sock, buf, size, 0, (struct sockaddr*)&from, &fromlen) == -1)
+	if (recvfrom(sock, &buf, size, 0, (struct sockaddr*)&from, &fromlen) == -1)
 	{
 		perror("recvfrom");
 		exit(1);
