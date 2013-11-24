@@ -141,7 +141,7 @@ void* GameEngine::start_routine()
 		b2Vec2 ballPosition = ballBody->GetPosition();
 		ball.setPosition(ballPosition.x * 100, ballPosition.y * 100);
 
-		//std::cout << playerPos.x << " " << playerPos.y << std::endl;
+		//std::cout << ballPosition.x << " " << ballPosition.y << std::endl;
 
 		sharedMemory.setCurrentState(ball, player[0], player[1]);
 

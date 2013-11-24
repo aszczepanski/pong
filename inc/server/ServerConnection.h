@@ -1,9 +1,8 @@
-#ifndef SERVER_TCP_CONNECTION_H
-#define SERVER_TCP_CONNECTION_H
+#ifndef SERVER_CONNECTION_H
+#define SERVER_CONNECTION_H
 
 #include <common/IThread.h>
-#include <server/ServerTCP.h>
-#include <server/ServerUDP.h>
+#include <server/IServerSocket.h>
 
 namespace common
 {
@@ -13,11 +12,11 @@ namespace common
 namespace server
 {
 
-class ServerTCPConnection
+class ServerConnection
 	: public common::IThread
 {
 public:
-	ServerTCPConnection(ServerUDP, common::SharedMemory&, int playerNumber);
+	ServerConnection(IServerSocket&, common::SharedMemory&, int playerNumber);
 
 private:
 	virtual void* start_routine();
@@ -28,7 +27,7 @@ private:
 	void currentStateRequestHandler();
 	void gameStatusRequestHandler();
 
-	ServerUDP serverUDP;
+	IServerSocket& serverSocket;
 	common::SharedMemory& sharedMemory;
 
 	const int playerNumber;
@@ -36,4 +35,4 @@ private:
 
 }
 
-#endif // SERVER_TCP_CONNECTION_H
+#endif // SERVER_CONNECTION_H

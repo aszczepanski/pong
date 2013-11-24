@@ -1,14 +1,13 @@
-#include <client/Drawer.h>
+#include <common/Drawer.h>
 #include <common/SharedMemory.h>
-#include <client/Communicator.h>
+#include <common/ICommunicator.h>
 #include <common/CursorPosition.h>
 #include <iostream>
 #include <SDL2/SDL.h>
 
-using namespace client;
 using namespace common;
 
-Drawer::Drawer(SharedMemory& sharedMemory, Communicator& communicator)
+Drawer::Drawer(SharedMemory& sharedMemory, ICommunicator& communicator)
 	: sharedMemory(sharedMemory), communicator(communicator)
 {
 }

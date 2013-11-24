@@ -1,5 +1,5 @@
 #include <server/ServerUDP.h>
-#include <common/ISocket.h>
+#include <server/IServerSocket.h>
 #include <cstdio>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -15,7 +15,7 @@ using namespace server;
 using namespace common;
 
 ServerUDP::ServerUDP(const std::string& port)
-	: ISocket(), port(port)
+	: IServerSocket(), port(port)
 {
 	sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sock == -1)
@@ -80,13 +80,15 @@ void ServerUDP::closeMainConnection()
 	close(sock);
 }
 
-ServerUDP ServerUDP::waitForSocket(void* buf, size_t size)
+IServerSocket* ServerUDP::waitForSocket()
 {
+	void* buf;
+	size_t size = 1;
 	if (recvfrom(sock, buf, size, 0, (struct sockaddr*)&from, &fromlen) == -1)
 	{
 		perror("recvfrom");
 		exit(1);
 	}
-	ServerUDP result = ServerUDP(*this);
+	ServerUDP* result = new ServerUDP(*this);
 	return result;
 }

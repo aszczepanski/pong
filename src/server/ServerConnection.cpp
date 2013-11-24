@@ -1,4 +1,5 @@
-#include <server/ServerTCPConnection.h>
+#include <server/ServerConnection.h>
+#include <server/IServerSocket.h>
 #include <server/ServerTCP.h>
 #include <server/ServerUDP.h>
 #include <common/SharedMemory.h>
@@ -13,13 +14,13 @@
 using namespace server;
 using namespace common;
 
-ServerTCPConnection::ServerTCPConnection(ServerUDP serverUDP, SharedMemory& sharedMemory, int playerNumber)
-	: serverUDP(serverUDP), sharedMemory(sharedMemory), playerNumber(playerNumber)
+ServerConnection::ServerConnection(IServerSocket& serverSocket, SharedMemory& sharedMemory, int playerNumber)
+	: serverSocket(serverSocket), sharedMemory(sharedMemory), playerNumber(playerNumber)
 {
 	assert(playerNumber == 0 || playerNumber == 1);
 }
 
-void* ServerTCPConnection::start_routine()
+void* ServerConnection::start_routine()
 {
 
 	// TODO
@@ -28,7 +29,7 @@ void* ServerTCPConnection::start_routine()
 	while (!quit || !informedAboutQuit)
 	{
 		unsigned char requestCode;
-		serverUDP.receive(&requestCode, sizeof(char));
+		serverSocket.receive(&requestCode, sizeof(char));
 
 		switch (requestCode)
 		{
@@ -62,56 +63,56 @@ void* ServerTCPConnection::start_routine()
 	return NULL;
 }
 
-void ServerTCPConnection::startRequestHandler()
+void ServerConnection::startRequestHandler()
 {
 	std::cout << "REQUEST_START received" << std::endl;
 
 	sharedMemory.setStarted(true);
 }
 
-void ServerTCPConnection::endRequestHandler()
+void ServerConnection::endRequestHandler()
 {
 	std::cout << "REQUEST_END received" << std::endl;
 
 	sharedMemory.setEnded(true);
 }
 
-void ServerTCPConnection::cursorPositionRequestHandler()
+void ServerConnection::cursorPositionRequestHandler()
 {
 	//std::cout << "REQUEST_CURSOR_POSITION received" << std::endl;
 	CursorPosition cursorPosition;
-	cursorPosition.receive(serverUDP);
+	cursorPosition.receive(serverSocket);
 	//std::cout << "x = " << cursorPosition.x << " y = " << cursorPosition.y << std::endl;
 
 	sharedMemory.setPlayerCursorPosition(cursorPosition, playerNumber);
 }
 
-void ServerTCPConnection::currentStateRequestHandler()
+void ServerConnection::currentStateRequestHandler()
 {
 	//std::cout << "REQUEST_STATE received" << std::endl;
-	static Ball ball;
-	static Player player[2];
+	Ball ball;
+	Player player[2];
 	
 	sharedMemory.getCurrentState(ball, player[0], player[1]);
 
-	ball.send(serverUDP);
-	player[0].send(serverUDP);
-	player[1].send(serverUDP);
+	ball.send(serverSocket);
+	player[0].send(serverSocket);
+	player[1].send(serverSocket);
 
 }
 
-void ServerTCPConnection::gameStatusRequestHandler()
+void ServerConnection::gameStatusRequestHandler()
 {
 	//std::cout << "REQUEST_GAME_STATUS received" << std::endl;
 	bool started;
 	sharedMemory.getStarted(started);
 
-	serverUDP.send(&started, sizeof(bool));
+	serverSocket.send(&started, sizeof(bool));
 
 	bool ended;
 	sharedMemory.getEnded(ended);
 
-	serverUDP.send(&ended, sizeof(bool));
+	serverSocket.send(&ended, sizeof(bool));
 
 	if (ended)
 		std::cout << "quit" << std::endl;

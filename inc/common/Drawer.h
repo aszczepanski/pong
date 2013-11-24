@@ -5,26 +5,22 @@
 
 namespace common
 {
-	class SharedMemory;
-}
 
-namespace client
-{
-
-class Communicator;
+class ICommunicator;
+class SharedMemory;
 
 class Drawer
 	: public common::IThread
 {
 
 public:
-	Drawer(common::SharedMemory&, Communicator&);
+	Drawer(common::SharedMemory&, ICommunicator&);
 
 private:
 	virtual void* start_routine();
 	
 	common::SharedMemory& sharedMemory;
-	Communicator& communicator;
+	ICommunicator& communicator;
 };
 
 }

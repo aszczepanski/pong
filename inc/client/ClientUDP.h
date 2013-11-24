@@ -1,7 +1,7 @@
 #ifndef CLIENTUDP_H
 #define CLIENTUDP_H
 
-#include <common/ISocket.h>
+#include <client/IClientSocket.h>
 #include <cstdlib>
 #include <common/Mutex.h>
 #include <netinet/in.h>
@@ -12,7 +12,7 @@ namespace client
 {
 
 class ClientUDP
-	: public common::ISocket
+	: public IClientSocket
 {
 public:
 	ClientUDP(const char* hostname, const char* port);

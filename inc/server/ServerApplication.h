@@ -1,7 +1,7 @@
 #ifndef SERVER_APPLICATION_H
 #define SERVER_APPLICATION_H
 
-#include <server/ServerTCPConnection.h>
+#include <server/ServerConnection.h>
 
 namespace common
 {
@@ -12,14 +12,13 @@ namespace server
 {
 
 class GameEngine;
-class ServerTCP;
-class ServerUDP;
+class IServerSocket;
 
 class ServerApplication
 {
 public:
 
-	ServerApplication(common::SharedMemory&, GameEngine&, ServerUDP&);
+	ServerApplication(common::SharedMemory&, GameEngine&, IServerSocket&);
 	void start();
 
 	~ServerApplication();
@@ -27,8 +26,8 @@ public:
 private:
 	common::SharedMemory& sharedMemory;
 	GameEngine& gameEngine;
-	ServerUDP& serverUDP;
-	ServerTCPConnection* serverTCPConnection[2];
+	IServerSocket& serverSocket;
+	ServerConnection* serverConnection;
 };
 
 }

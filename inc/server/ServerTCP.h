@@ -1,7 +1,7 @@
 #ifndef SERVER_TCP_H
 #define SERVER_TCP_H
 
-#include <common/ISocket.h>
+#include <server/IServerSocket.h>
 #include <cstdlib>
 #include <common/Mutex.h>
 #include <string>
@@ -11,7 +11,7 @@ namespace server
 {
 
 class ServerTCP
-	: public common::ISocket
+	: public IServerSocket
 {
 public:
 	ServerTCP(const std::string& port);
@@ -23,7 +23,7 @@ public:
 	void receive(void*, size_t) const;
 	void closeSocket();
 	void closeConnection();
-	ServerTCP waitForSocket();
+	IServerSocket* waitForSocket();
 
 	friend bool operator>(const ServerTCP&, const ServerTCP&);
 	friend bool operator<(const ServerTCP&, const ServerTCP&);

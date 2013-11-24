@@ -1,5 +1,6 @@
 #include <common/Mutex.h>
 #include <pthread.h>
+#include <cstdio>
 
 using namespace common;
 

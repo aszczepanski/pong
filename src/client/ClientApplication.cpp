@@ -1,7 +1,8 @@
 #include <client/ClientApplication.h>
+#include <client/IClientSocket.h>
 #include <client/ClientTCP.h>
 #include <client/ClientUDP.h>
-#include <client/Drawer.h>
+#include <common/Drawer.h>
 #include <common/SharedMemory.h>
 #include <client/Communicator.h>
 #include <iostream>
@@ -33,8 +34,8 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-ClientApplication::ClientApplication(SharedMemory& sharedMemory, Drawer& drawer, ClientUDP& clientUDP, Communicator& communicator)
-	: sharedMemory(sharedMemory), drawer(drawer), clientUDP(clientUDP), communicator(communicator)
+ClientApplication::ClientApplication(SharedMemory& sharedMemory, Drawer& drawer, IClientSocket& clientSocket, Communicator& communicator)
+	: sharedMemory(sharedMemory), drawer(drawer), clientSocket(clientSocket), communicator(communicator)
 {
 }
 

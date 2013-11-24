@@ -1,9 +1,12 @@
 #include <server/ServerApplication.h>
+#include <server/IServerSocket.h>
 #include <server/ServerTCP.h>
 #include <server/ServerUDP.h>
-#include <server/ServerTCPConnection.h>
+#include <server/ServerConnection.h>
 #include <server/GameEngine.h>
+#include <server/Communicator.h>
 #include <common/SharedMemory.h>
+#include <common/Drawer.h>
 #include <iostream>
 #include <cstddef>
 #include <unistd.h>
@@ -26,9 +29,9 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-ServerApplication::ServerApplication(SharedMemory& sharedMemory, GameEngine& gameEngine, ServerUDP& serverUDP)
+ServerApplication::ServerApplication(SharedMemory& sharedMemory, GameEngine& gameEngine, IServerSocket& serverSocket)
 	: sharedMemory(sharedMemory), gameEngine(gameEngine),
-		serverUDP(serverUDP), serverTCPConnection { NULL, NULL }
+		serverSocket(serverSocket), serverConnection (NULL)
 {
 }
 
@@ -36,32 +39,31 @@ void ServerApplication::start()
 {
 	std::cout << "starting server application" << std::endl;
 
-	unsigned char c;
-	ServerUDP tmpServerUDP = serverUDP.waitForSocket(&c, sizeof(char));
-	serverTCPConnection[0] = new ServerTCPConnection(tmpServerUDP, sharedMemory, 0);
-	serverTCPConnection[0]->run();
-	
-//	ServerUDP tmpServerUDP2 = serverUDP.waitForSocket(&c, sizeof(char));
-//	serverTCPConnection[1] = new ServerTCPConnection(tmpServerUDP2, sharedMemory, 1);
-//	serverTCPConnection[1]->run();
+	IServerSocket* tmpServer = serverSocket.waitForSocket();
+	serverConnection = new ServerConnection(*tmpServer, sharedMemory, 1);
+	serverConnection->run();
 
+	Communicator communicator(sharedMemory);
+	Drawer drawer(sharedMemory, communicator);
+
+	drawer.run();
 
 	gameEngine.run();
 
 	gameEngine.wait();
 
-	serverTCPConnection[0]->wait();
+	serverConnection->wait();
 
-//	serverTCPConnection[1]->wait();
+	drawer.wait();
+
+	delete tmpServer;
+	tmpServer = NULL;
 
 	std::cout << "stopping server application" << std::endl;
 }
 
 ServerApplication::~ServerApplication()
 {
-	for (int i=0; i<2; i++)
-	{
-		delete serverTCPConnection[i];
-		serverTCPConnection[i] = NULL;
-	}
+	delete serverConnection;
+	serverConnection = NULL;
 }

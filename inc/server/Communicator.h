@@ -2,7 +2,6 @@
 #define COMMUNICATOR_H
 
 #include <common/ICommunicator.h>
-#include <common/IThread.h>
 #include <common/Mutex.h>
 
 namespace common
@@ -11,17 +10,15 @@ namespace common
 	class SharedMemory;
 }
 
-namespace client
+namespace server
 {
-
-class IClientSocket;
 
 class Communicator
 	: public common::ICommunicator
 {
 
 public:
-	Communicator(common::SharedMemory&, IClientSocket&);
+	Communicator(common::SharedMemory&);
 
 	void sendCursorPosition(const common::CursorPosition&) const;
 	void sendStartRequest() const;
@@ -29,11 +26,11 @@ public:
 	void getCurrentState();
 
 private:
+
 	virtual void* start_routine();
 
-	IClientSocket& clientSocket;
+	mutable common::Mutex mutex;
 
-	static common::Mutex mutex;
 };
 
 }

@@ -10,7 +10,7 @@ set(CLIENT_SRCS
 	ClientTCP.cpp
 	ClientUDP.cpp
 	Communicator.cpp
-	Drawer.cpp
+	IClientSocket.cpp
 )
 
 link_directories(${PROJECT_SOURCE_DIR}/lib)

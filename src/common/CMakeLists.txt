@@ -5,6 +5,8 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 set(COMMON_SRCS
 	Ball.cpp
 	CursorPosition.cpp
+	Drawer.cpp
+	ICommunicator.cpp
 	ISocket.cpp
 	IThread.cpp
 	Mutex.cpp

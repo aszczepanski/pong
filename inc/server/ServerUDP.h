@@ -1,7 +1,7 @@
 #ifndef SERVERUDP_H
 #define SERVERUDP_H
 
-#include <common/ISocket.h>
+#include <server/IServerSocket.h>
 #include <cstdlib>
 #include <common/Mutex.h>
 #include <netinet/in.h>
@@ -11,7 +11,7 @@ namespace server
 {
 
 class ServerUDP
-	: public common::ISocket
+	: public IServerSocket
 {
 public:
 	ServerUDP(const std::string& port);
@@ -22,9 +22,9 @@ public:
 	void receive(void*, size_t) const;
 	void closeConnection();
 	void closeMainConnection();
-	ServerUDP waitForSocket(void*, size_t);
+	virtual IServerSocket* waitForSocket();
 private:
-	mutable int sock, length;
+	int sock, length;
 	mutable socklen_t fromlen;
 	struct sockaddr_in server;
 	struct sockaddr_in from;

@@ -14,7 +14,7 @@ using namespace std;
 using namespace client;
 
 ClientTCP::ClientTCP(const string& hostname, const string& port)
-	: ISocket(), hostname(hostname), port(port), connectionOpened(false)
+	: IClientSocket(), hostname(hostname), port(port), connectionOpened(false)
 {
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd == -1)

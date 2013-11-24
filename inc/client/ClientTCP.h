@@ -1,7 +1,7 @@
 #ifndef CLIENT_TCP_H
 #define CLIENT_TCP_H
 
-#include <common/ISocket.h>
+#include <client/IClientSocket.h>
 #include <cstdlib>
 #include <common/Mutex.h>
 #include <string>
@@ -10,7 +10,7 @@ namespace client
 {
 
 class ClientTCP
-	: public common::ISocket
+	: public IClientSocket
 {
 public:
 	ClientTCP(const std::string& hostname, const std::string& port);

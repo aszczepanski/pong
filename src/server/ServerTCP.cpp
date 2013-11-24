@@ -1,5 +1,5 @@
 #include <server/ServerTCP.h>
-#include <common/ISocket.h>
+#include <server/IServerSocket.h>
 #include <cstdio>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -16,7 +16,7 @@
 using namespace server;
 
 ServerTCP::ServerTCP(const std::string& port)
-	: common::ISocket(), in_sockfd(-1), port(port)
+	: IServerSocket(), in_sockfd(-1), port(port)
 {
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd == -1)
@@ -45,7 +45,7 @@ ServerTCP::ServerTCP(const std::string& port)
 }
 
 ServerTCP::ServerTCP(const ServerTCP& server)
-	: common::ISocket(), sockfd(server.sockfd),
+	: IServerSocket(), sockfd(server.sockfd),
 	in_sockfd(server.in_sockfd), port(server.port)
 {
 }
@@ -113,7 +113,7 @@ void ServerTCP::closeConnection()
 	}
 }
 
-ServerTCP ServerTCP::waitForSocket()
+IServerSocket* ServerTCP::waitForSocket()
 {
 	socklen_t socklen;
 	sockaddr_in in_addr;
@@ -128,8 +128,8 @@ ServerTCP ServerTCP::waitForSocket()
 		perror("server accept");
 //		throw AcceptError();
 	}
-	ServerTCP result = ServerTCP(*this);
-	result.in_sockfd = new_sockfd;
+	ServerTCP* result = new ServerTCP(*this);
+	result->in_sockfd = new_sockfd;
 	return result;
 }
 

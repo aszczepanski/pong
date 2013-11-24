@@ -4,28 +4,27 @@
 namespace common
 {
 	class SharedMemory;
+	class Drawer;
 }
 
 namespace client
 {
 
-class Drawer;
-class ClientTCP;
-class ClientUDP;
+class IClientSocket;
+//class ClientTCP;
+//class ClientUDP;
 class Communicator;
 
 class ClientApplication
 {
 public:
-	//ClientApplication(common::SharedMemory&, Drawer&, ClientTCP&, Communicator&);
-	ClientApplication(common::SharedMemory&, Drawer&, ClientUDP&, Communicator&);
+	ClientApplication(common::SharedMemory&, common::Drawer&, IClientSocket&, Communicator&);
 	void start();
 
 private:
 	common::SharedMemory& sharedMemory;
-	Drawer& drawer;
-	//ClientTCP& clientTCP;
-	ClientUDP& clientUDP;
+	common::Drawer& drawer;
+	IClientSocket& clientSocket;
 	Communicator& communicator;
 };
 
