@@ -23,9 +23,6 @@ void* Drawer::start_routine()
   {
     sharedMemory.getPlayerCameraPosition(x, 0);
     std::cout << x << "\n";
-    if (cvWaitKey(30) != -1) {
-      playing = false;
-    }
   }
 #endif
 
