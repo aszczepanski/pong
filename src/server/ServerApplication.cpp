@@ -61,13 +61,13 @@ void ServerApplication::start()
 
 	camera.run();
 
-	// gameEngine.wait();
+	gameEngine.wait();
 
 #ifndef SERVER_ONLY
 	serverConnection->wait();
 #endif
 
-	// drawer.wait();
+	drawer.wait();
 
 #ifndef SERVER_ONLY
 	delete tmpServer;
