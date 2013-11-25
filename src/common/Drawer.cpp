@@ -2,23 +2,34 @@
 #include <common/SharedMemory.h>
 #include <common/ICommunicator.h>
 #include <common/CursorPosition.h>
-#include <common/Camera.h>
 #include <iostream>
 #include <SDL2/SDL.h>
 
 using namespace common;
 
-Drawer::Drawer(SharedMemory& sharedMemory, ICommunicator& communicator, Camera& camera)
+Drawer::Drawer(SharedMemory& sharedMemory, ICommunicator& communicator)
 	: sharedMemory(sharedMemory), communicator(communicator)
 {
-	this->camera = camera;
 }
 
 void* Drawer::start_routine()
 {
 	std::cout << "Drawer thread" << std::endl;
 
+#ifndef USE_SDL
+  int x;
+  bool playing = true;
+  while(playing)
+  {
+    sharedMemory.getPlayerCameraPosition(x, 0);
+    std::cout << x << "\n";
+    if (cvWaitKey(30) != -1) {
+      playing = false;
+    }
+  }
+#endif
 
+#ifdef USE_SDL
  	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
  	{
  		std::cout << SDL_GetError() << std::endl;
@@ -60,7 +71,9 @@ void* Drawer::start_routine()
  	float lastX, lastY;
  	while (!quit)
  	{
- 		while (SDL_PollEvent(&e))
+
+    /*
+    while (SDL_PollEvent(&e))
  		{
  			if (e.type == SDL_QUIT)
  			{
@@ -85,10 +98,16 @@ void* Drawer::start_routine()
  			{
  				lastX = e.motion.x;
  				lastY = e.motion.y;
- 				communicator.sendCursorPosition(CursorPosition(lastX, lastY));
+ 				//communicator.sendCursorPosition(CursorPosition(lastX, lastY));
  				//printf("\t\t%d %d\n", e.motion.x, e.motion.y);
  			}
  		}
+    */
+
+  SDL_PumpEvents();
+  int xxx,yyy;
+  SDL_GetMouseState(&xxx, &yyy);
+  std::cout << xxx << " " << yyy << std::endl;
 
  		SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
  		SDL_RenderClear(ren);
@@ -165,6 +184,7 @@ void* Drawer::start_routine()
  	SDL_DestroyWindow(win);
 
  	SDL_Quit();
+#endif
 
 	return NULL;
 }

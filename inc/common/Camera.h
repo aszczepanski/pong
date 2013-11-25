@@ -3,6 +3,8 @@
 
 #include <math.h>
 #include <iostream>
+#include <common/IThread.h>
+#include <common/Mutex.h>
 #include <string>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -22,10 +24,12 @@ struct Drawing
   bool drag_drop;
 };
 
+class SharedMemory;
+
 class Camera
 {
 public:
-  Camera();
+  Camera(common::SharedMemory&);
 
   void getHSV(HSV& hsv) const;
   void setHSV(HSV hsv);
@@ -37,6 +41,8 @@ public:
 
   int getCenter(cv::Mat &input) const;
 
+  void run();
+
   static void measureHand(int event, int x, int y, int flags, void* param);
 
   int configure();
@@ -46,7 +52,7 @@ private:
   HSV hsv;
   int screen_width;
   cv::string main_window;
-  CvCapture *camera_handle;
+  common::SharedMemory& sharedMemory;
 };
 
 }

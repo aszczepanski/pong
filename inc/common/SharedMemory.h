@@ -23,6 +23,9 @@ public:
 	void getPlayerCursorPosition(CursorPosition&, int nr) const;
 	void setPlayerCursorPosition(const CursorPosition&, int nr);
 
+	void getPlayerCameraPosition(int&, int nr) const;
+	void setPlayerCameraPosition(const int&, int nr);
+
 	void getCurrentState(Ball&, Player&, Player&) const;
 	void setCurrentState(const Ball&, const Player&, const Player&);
 
@@ -36,6 +39,7 @@ private:
 	Ball ball;
 	Player player[2];
 	CursorPosition cursorPosition[2];
+	int cameraPosition[2];
 
 	bool started, ended;
 

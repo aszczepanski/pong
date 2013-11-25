@@ -1,16 +1,61 @@
 #include <common/Camera.h>
+#include <common/SharedMemory.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
 using namespace common;
 using namespace cv;
+using namespace std;
 
 bool drag_drop = false;
 
-Camera::Camera()
+Camera::Camera(SharedMemory& sharedMemory)
+  : sharedMemory(sharedMemory)
 {
-  this->screen_width = 1280;
   this->main_window = "Pong Configuration";
+  this->screen_width = 1280;
+}
+
+void Camera::run()
+{
+  namedWindow(this->main_window, CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL);
+
+  cout << "camera main loop\n";
+
+  Mat input, original;
+  CvCapture *camCapture;
+
+  bool playing = true;
+
+  cvCaptureFromCAM(0);
+  if (!(camCapture = cvCaptureFromCAM(CV_CAP_ANY))) {
+    std::cout << "LOG: Failed to capture from camera\n";
+  }
+
+  std::cout << "LOG: Camera opened successfully\n";
+
+  IplImage *cameraFrame;
+
+  Mat bg;
+
+  int my_position = screen_width / 2, x;
+
+  while (playing) {
+    if ((cameraFrame = cvQueryFrame(camCapture))) {
+      bg = Mat(cameraFrame, false);
+      input = bg.clone();
+      x = getCenter(input);
+      if (x > 0) my_position = min(max(150, x), screen_width - 150);
+      line(bg, cvPoint(my_position, 0), cvPoint(my_position, 720), Scalar(0, 0, 255), 10, 8);
+      imshow(main_window, bg);
+      sharedMemory.setPlayerCameraPosition(x, 0);
+    }
+
+    if (cvWaitKey(2) != -1) {
+      std::cout << "LOG: Stopped by player\n";
+      playing = false;
+    }
+  }
 }
 
 void Camera::getHSV(HSV& hsv) const
@@ -127,14 +172,11 @@ int Camera::configure()
   CvCapture *camCapture = NULL;
   bool configuring = true;
 
-  camera_handle = camCapture;
-
   // camera init
   if (!(camCapture = cvCaptureFromCAM(CV_CAP_ANY))) {
     std::cout << "LOG: Failed to capture from camera\n";
     return -1;
   }
-
   std::cout << "LOG: Camera opened successfully << " << camCapture << "\n";
 
   IplImage *cameraFrame;

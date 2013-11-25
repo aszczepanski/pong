@@ -10,6 +10,28 @@ SharedMemory::SharedMemory()
 {
 }
 
+void SharedMemory::setPlayerCameraPosition(const int& x, int nr)
+{
+	assert(nr == 0 || nr == 1);
+
+	mutex.lock();
+
+	this->cameraPosition[nr] = x;
+
+	mutex.unlock();
+}
+
+void SharedMemory::getPlayerCameraPosition(int& x, int nr) const
+{
+	assert(nr == 0 || nr == 1);
+
+	mutex.lock();
+
+	x = this->cameraPosition[nr];
+
+	mutex.unlock();
+}
+
 void SharedMemory::getPlayerCursorPosition(CursorPosition& cursorPosition, int nr) const
 {
 	assert(nr == 0 || nr == 1);
