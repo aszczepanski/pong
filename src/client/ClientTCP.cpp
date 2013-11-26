@@ -20,7 +20,7 @@ ClientTCP::ClientTCP(const string& hostname, const string& port)
 	if (sockfd == -1)
 	{
 		perror("client socket error");
-//		throw SocketError();
+		throw SocketError();
 	}
 
 	sockaddr_in addr;
@@ -30,7 +30,7 @@ ClientTCP::ClientTCP(const string& hostname, const string& port)
 	if (inet_aton(hostname.c_str(), (in_addr*)&addr.sin_addr.s_addr) == 0)
 	{
 		perror("client aton error");
-//		throw AtonError();
+		throw AtonError();
 	}
 
 	cout << "TCP connecting" << endl;
@@ -38,7 +38,7 @@ ClientTCP::ClientTCP(const string& hostname, const string& port)
 	if (connect(sockfd, (sockaddr*)&addr, sizeof(addr)) == -1)
 	{
 		perror("client connect error");
-//		throw ConnectError();
+		throw ConnectError();
 	}
 
 	connectionOpened = true;
@@ -70,41 +70,35 @@ void ClientTCP::closeSocket()
 void ClientTCP::send(const void* msg, size_t size) const
 {
 	assert(connectionOpened);
-//	mutex.lock();
 	int st = write(sockfd, msg, size);
-//	mutex.unlock();
 
 	if (-1 == st)
 	{
 		perror("client write error");
-//		throw WriteError();
+		throw WriteError();
 	}
 }
 
 void ClientTCP::receive(void* buf, size_t size) const
 {
 	assert(connectionOpened);
-//	mutex.lock();
 	int st = read(sockfd, buf, size);
-//	mutex.unlock();
 
 	if (-1 == st)
 	{
 		perror("client read error");
-//		throw ReadError();
+		throw ReadError();
 	}
 }
 
 void ClientTCP::receiveNoBlock(void* buf, size_t size) const
 {
 	assert(connectionOpened);
-//	mutex.lock();
 	int st = read(sockfd, buf, size);
-//	mutex.unlock();
 
 	if (-1 == st)
 	{
 		perror("client read error");
-//		throw ReadError();
+		throw ReadError();
 	}
 }

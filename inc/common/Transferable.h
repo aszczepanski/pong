@@ -4,13 +4,11 @@
 namespace common
 {
 
-class ISocket;
-
 class Transferable
 {
 public:
-	virtual void send(ISocket&) const = 0;
-	virtual void receive(ISocket&) = 0;
+	virtual void send(unsigned char*, int startPos) const = 0;
+	virtual void receive(unsigned char*, int startPos) = 0;
 
 	virtual ~Transferable() { }
 };

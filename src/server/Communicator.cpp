@@ -1,4 +1,5 @@
 #include <server/Communicator.h>
+#include <server/ServerTCP.h>
 #include <common/SharedMemory.h>
 #include <common/Ball.h>
 #include <common/Player.h>
@@ -12,27 +13,9 @@
 using namespace server;
 using namespace common;
 
-Communicator::Communicator(SharedMemory& sharedMemory)
-	: ICommunicator(sharedMemory)
+Communicator::Communicator(SharedMemory& sharedMemory, ServerTCP& serverTCP)
+	: ICommunicator(sharedMemory), serverTCP(serverTCP)
 {
-}
-
-void* Communicator::start_routine()
-{
-/*
-	std::cout << "Communicator thread" << std::endl;
-
-	bool quit = false;
-	while (!quit)
-	{
-		getCurrentState();
-		usleep(25000); // 40 fps
-
-		sharedMemory.getEnded(quit);
-	}
-*/
-	return NULL;
-
 }
 
 void Communicator::sendCursorPosition(const CursorPosition& cursorPosition) const
@@ -78,5 +61,8 @@ void Communicator::sendStartRequest() const
 void Communicator::sendEndRequest() const
 {
 	sharedMemory.setEnded(true);
+
+//	serverTCP.send(&BEGIN_MESSAGE, 1);
+	serverTCP.send(&REQUEST_END, 1);
 }
 

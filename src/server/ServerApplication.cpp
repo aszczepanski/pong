@@ -2,7 +2,8 @@
 #include <server/IServerSocket.h>
 #include <server/ServerTCP.h>
 #include <server/ServerUDP.h>
-#include <server/ServerConnection.h>
+#include <server/ConnectionTCP.h>
+#include <server/ConnectionUDP.h>
 #include <server/GameEngine.h>
 #include <server/Communicator.h>
 #include <common/SharedMemory.h>
@@ -22,20 +23,27 @@ int main(int argc, char* argv[])
 {
 	std::cout << "Hello pong!" << std::endl;
 
-	//ServerTCP serverTCP(port.c_str());
+	ServerTCP serverTCP(port.c_str());
+
+#ifndef SERVER_ONLY
+	ServerTCP acceptedServerTCP = serverTCP.waitForSocket();
+#else
+	ServerTCP acceptedServerTCP = serverTCP;
+#endif
 	ServerUDP serverUDP(port.c_str());
 	SharedMemory sharedMemory;
 	GameEngine gameEngine(sharedMemory);
 
-	ServerApplication serverApplication(sharedMemory, gameEngine, serverUDP);
+	ServerApplication serverApplication(sharedMemory, gameEngine, acceptedServerTCP, serverUDP);
 	serverApplication.start();
 
 	return 0;
 }
 
-ServerApplication::ServerApplication(SharedMemory& sharedMemory, GameEngine& gameEngine, IServerSocket& serverSocket)
+ServerApplication::ServerApplication(SharedMemory& sharedMemory, GameEngine& gameEngine, ServerTCP& serverTCP, ServerUDP& serverUDP)
 	: sharedMemory(sharedMemory), gameEngine(gameEngine),
-		serverSocket(serverSocket), serverConnection (NULL)
+		serverTCP(serverTCP), connectionTCP(serverTCP, sharedMemory, 1),
+		serverUDP(serverUDP), connectionUDP(serverUDP, sharedMemory, 1)
 {
 }
 
@@ -44,16 +52,15 @@ void ServerApplication::start()
 	std::cout << "starting server application" << std::endl;
 
 #ifndef SERVER_ONLY
-	IServerSocket* tmpServer = serverSocket.waitForSocket();
-	serverConnection = new ServerConnection(*tmpServer, sharedMemory, 1);
-	serverConnection->run();
+	connectionTCP.run();
+	connectionUDP.run();
 #endif
 
 	Camera camera(sharedMemory);
-	camera.init();
-	camera.configure();
+//	camera.init();
+//	camera.configure();
 
-	Communicator communicator(sharedMemory);
+	Communicator communicator(sharedMemory, serverTCP);
 
 	Drawer drawer(sharedMemory, communicator, camera);
 
@@ -61,19 +68,13 @@ void ServerApplication::start()
 
 	drawer.run();
 
-//	camera.run();
-
 	gameEngine.wait();
 
 #ifndef SERVER_ONLY
-	serverConnection->wait();
-#endif
-
-//	drawer.wait();
-
-#ifndef SERVER_ONLY
-	delete tmpServer;
-	tmpServer = NULL;
+	connectionTCP.wait();
+	std::cout << "after tcp" << std::endl;
+	connectionUDP.wait();
+	std::cout << "after udp" << std::endl;
 #endif
 
 	std::cout << "stopping server application" << std::endl;
@@ -81,6 +82,4 @@ void ServerApplication::start()
 
 ServerApplication::~ServerApplication()
 {
-	delete serverConnection;
-	serverConnection = NULL;
 }

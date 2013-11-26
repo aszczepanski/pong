@@ -23,11 +23,11 @@ int main(int argc, char* argv[])
 		host = argv[1];
 	}
 
+	ClientTCP clientTCP(host.c_str(), port.c_str());
+
 	ClientUDP clientUDP(host.c_str(), port.c_str());
-	unsigned char c = 'c';
-	clientUDP.send(&c, sizeof(char));
 	SharedMemory sharedMemory;
-	Communicator communicator(sharedMemory, clientUDP);
+	Communicator communicator(sharedMemory, clientTCP, clientUDP);
 
 	Camera camera(sharedMemory);
 	//camera.configure();
@@ -53,8 +53,6 @@ void ClientApplication::start()
 
 	communicator.run();
 	drawer.run();
-
-	//drawer.wait();
 
 	communicator.wait();
 

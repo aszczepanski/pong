@@ -11,7 +11,8 @@ set(CLIENT_SRCS
 	ClientUDP.cpp
 	Communicator.cpp
 	IClientSocket.cpp
-	Receiver.cpp
+	ReceiverTCP.cpp
+	ReceiverUDP.cpp
 )
 
 link_directories(${PROJECT_SOURCE_DIR}/lib)

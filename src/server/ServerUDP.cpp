@@ -23,7 +23,7 @@ ServerUDP::ServerUDP(const std::string& port)
 	if (sock == -1)
 	{
 		perror("socket error");
-		exit(1);
+		throw SocketError();
 	}
 
 	length = sizeof(server);
@@ -37,7 +37,7 @@ ServerUDP::ServerUDP(const std::string& port)
 	if (bind(sock, (struct sockaddr*)&server, length) == -1)
 	{
 		perror("bind error");
-		exit(1);
+		throw BindError();
 	}
 
 	fromlen = sizeof(struct sockaddr_in);
@@ -57,7 +57,7 @@ void ServerUDP::send(const void* msg, size_t size) const
 	if (sendto(sock, msg, size, 0, (struct sockaddr*)&from, fromlen) == -1)
 	{
 		perror("sendto error");
-		exit(1);
+		throw SendtoError();
 	}
 }
 
@@ -66,8 +66,7 @@ void ServerUDP::receive(void* buf, size_t size) const
 	if (recvfrom(sock, buf, size, 0, (struct sockaddr*)&from, &fromlen) == -1)
 	{
 		perror("recvfrom error");
-		buf = NULL;
-//		exit(1);
+		throw RecvfromError();
 	}
 }
 
@@ -79,11 +78,11 @@ void ServerUDP::receiveNoBlock(void* buf, size_t size) const
 	memcpy(&readfds,&masterfds,sizeof(fd_set));
 	timeval timeout;
 	timeout.tv_sec = 0;
-	timeout.tv_usec = 1000;
+	timeout.tv_usec = 100000;
 	if (select(sock+1, &readfds, NULL, NULL, &timeout) < 0)
 	{
 		printf("select error");
-		exit(1);
+		throw SelectError();
 	}
 
 	if (FD_ISSET(sock, &readfds))
@@ -92,15 +91,13 @@ void ServerUDP::receiveNoBlock(void* buf, size_t size) const
 		if (recvfrom(sock, buf, size, 0, (struct sockaddr*)&from, &fromlen) == -1)
 		{
 			perror("recvfrom error");
-			buf = NULL;
-//			exit(1);
+			throw RecvfromError();
 		}
 	}
 	else
 	{
 		printf("socket timedout\n");
-		//printf("Socket timeout started=%d\n",packets_started);
-		throw std::exception();
+		throw TimeoutError();
 	}
 }
 
@@ -115,15 +112,3 @@ void ServerUDP::closeMainConnection()
 	close(sock);
 }
 
-IServerSocket* ServerUDP::waitForSocket()
-{
-	unsigned char buf;
-	size_t size = 1;
-	if (recvfrom(sock, &buf, size, 0, (struct sockaddr*)&from, &fromlen) == -1)
-	{
-		perror("recvfrom");
-		exit(1);
-	}
-	ServerUDP* result = new ServerUDP(*this);
-	return result;
-}

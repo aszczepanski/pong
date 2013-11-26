@@ -2,6 +2,7 @@
 #include <common/SharedMemory.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <cstdio>
 
 using namespace common;
 using namespace cv;
@@ -19,7 +20,7 @@ Camera::Camera(SharedMemory& sharedMemory)
 Camera::~Camera()
 {
   cvDestroyAllWindows();
-  cvReleaseCapture(&camCapture);
+  //cvReleaseCapture(&camCapture);
 }
 
 void Camera::getHSV(HSV& hsv) const

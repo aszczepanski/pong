@@ -5,14 +5,6 @@
 
 const std::string port = "6060";
 
-/*
- * PROTOCOL DESCRIPTION:
- * 
- * BEGIN_MESSAGE	1B
- * REQUEST CODE		1B
- * MESSAGE CONTENT	xB
- *
- */
 
 const unsigned char BEGIN_MESSAGE = 0xAB;
 

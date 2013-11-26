@@ -7,6 +7,7 @@
 #include <SDL2/SDL.h>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <unistd.h>
 
 using namespace common;
 
@@ -119,16 +120,21 @@ void Drawer::run()
 */
 		sf::Vector2i mpos = sf::Mouse::getPosition(window);
 
-    camera.getPosition(mpos.x);
-		if (mpos.x >= 0 && mpos.y >= 0 && mpos.x < 600 && mpos.y < 600)
-		{
-			communicator.sendCursorPosition(CursorPosition(mpos.x, mpos.y));
-		}
+//    camera.getPosition(mpos.x);
+		mpos.x = std::max(mpos.x, 0);
+		mpos.x = std::min(mpos.x, 599);
+
+		communicator.sendCursorPosition(CursorPosition(mpos.x, mpos.y));
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 		{
 			std::cout << "escape" << std::endl;
 			communicator.sendEndRequest();
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+		{
+			std::cout << "space" << std::endl;
+			communicator.sendStartRequest();
 		}
 
  		int positionX, positionY;
@@ -153,7 +159,6 @@ void Drawer::run()
 		circle.setPosition(positionX - 16, positionY - 16);
 		circle.setFillColor(sf::Color::Green);
 		window.draw(circle);
-
 
 
  		// draw bottom platform
@@ -243,6 +248,8 @@ void Drawer::run()
 		window.display();
 
  		sharedMemory.getEnded(quit);
+
+		usleep(25000);
  	}
 
 // 	SDL_DestroyTexture(greenTex);

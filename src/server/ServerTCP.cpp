@@ -22,7 +22,7 @@ ServerTCP::ServerTCP(const std::string& port)
 	if (sockfd == -1)
 	{
 		perror("server socket error");
-//		throw SocketError();
+		throw SocketError();
 	}
 
 	sockaddr_in addr;
@@ -33,13 +33,13 @@ ServerTCP::ServerTCP(const std::string& port)
 	if (bind(sockfd, (sockaddr*)&addr, sizeof(addr)) == -1)
 	{
 		perror("server bind error");
-//		throw BindError();
+		throw BindError();
 	}
 
 	if (listen(sockfd, MAX_WAITING_SERVERS) == -1)
 	{
 		perror("server listen error");
-//		throw ListenError();
+		throw ListenError();
 	}
 
 }
@@ -73,37 +73,53 @@ ServerTCP::~ServerTCP()
 
 void ServerTCP::send(const void* msg, size_t size) const
 {
-//	mutex.lock();
 	int st = write(in_sockfd, msg, size);
-//	mutex.unlock();
 	if (-1 == st)
 	{
 		perror("server write error");
-//		throw WriteError();
+		throw WriteError();
 	}
 }
 
 void ServerTCP::receive(void* buf, size_t size) const
 {
-//	mutex.lock();
 	int st = read(in_sockfd, buf, size);
-//	mutex.unlock();
 	if (-1 == st)
 	{
 		perror("server read error");
-//		throw ReadError();
+		throw ReadError();
 	}
 }
 
 void ServerTCP::receiveNoBlock(void* buf, size_t size) const
 {
-//	mutex.lock();
-	int st = read(in_sockfd, buf, size);
-//	mutex.unlock();
-	if (-1 == st)
+	fd_set masterfds, readfds;
+	FD_ZERO(&masterfds);
+	FD_SET(in_sockfd, &masterfds);
+	memcpy(&readfds,&masterfds,sizeof(fd_set));
+	timeval timeout;
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 100000;
+	if (select(in_sockfd+1, &readfds, NULL, NULL, &timeout) < 0)
 	{
-		perror("server read error");
-//		throw ReadError();
+		printf("select error");
+		throw SelectError();
+	}
+
+	if (FD_ISSET(in_sockfd, &readfds))
+	{
+//		printf("Read from socket\n");
+		int st = read(in_sockfd, buf, size);
+		if (-1 == st)
+		{
+			perror("server read error");
+			throw ReadError();
+		}
+	}
+	else
+	{
+		printf("read tcp timedout\n");
+		throw TimeoutError();
 	}
 }
 
@@ -125,23 +141,21 @@ void ServerTCP::closeConnection()
 	}
 }
 
-IServerSocket* ServerTCP::waitForSocket()
+ServerTCP ServerTCP::waitForSocket()
 {
 	socklen_t socklen;
 	sockaddr_in in_addr;
 	socklen = sizeof(in_addr);
 	
-//	mutex.lock();
 	int new_sockfd = accept(sockfd, (sockaddr*)&in_addr, &socklen);
 	std::cout << "server new_sockfd = " << new_sockfd << std::endl;
-//	mutex.unlock();
 	if (new_sockfd == -1)
 	{
 		perror("server accept");
-//		throw AcceptError();
+		throw AcceptError();
 	}
-	ServerTCP* result = new ServerTCP(*this);
-	result->in_sockfd = new_sockfd;
+	ServerTCP result = ServerTCP(*this);
+	result.in_sockfd = new_sockfd;
 	return result;
 }
 

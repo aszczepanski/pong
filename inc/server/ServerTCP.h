@@ -24,7 +24,7 @@ public:
 	void receiveNoBlock(void*, size_t) const;
 	void closeSocket();
 	void closeConnection();
-	IServerSocket* waitForSocket();
+	ServerTCP waitForSocket();
 
 	friend bool operator>(const ServerTCP&, const ServerTCP&);
 	friend bool operator<(const ServerTCP&, const ServerTCP&);
@@ -33,7 +33,7 @@ private:
 	int sockfd;
 	int in_sockfd;
 	std::string port;
-	static const unsigned short MAX_WAITING_SERVERS = 2;
+	static const unsigned short MAX_WAITING_SERVERS = 1;
 
 	mutable common::Mutex mutex;
 };

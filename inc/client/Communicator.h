@@ -17,21 +17,22 @@ namespace client
 class IClientSocket;
 
 class Communicator
-	: public common::ICommunicator
+	: public common::ICommunicator, public common::IThread
 {
 
 public:
-	Communicator(common::SharedMemory&, IClientSocket&);
+	Communicator(common::SharedMemory&, IClientSocket& clientTCP, IClientSocket& clientUDP);
 
 	void sendCursorPosition(const common::CursorPosition&) const;
 	void sendStartRequest() const;
 	void sendEndRequest() const;
-	void getCurrentState();
+//	void getCurrentState();
 
 private:
 	virtual void* start_routine();
 
-	IClientSocket& clientSocket;
+	IClientSocket& clientTCP;
+	IClientSocket& clientUDP;
 
 	static common::Mutex mutex;
 };

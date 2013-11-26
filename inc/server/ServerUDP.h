@@ -23,7 +23,6 @@ public:
 	void receiveNoBlock(void*, size_t) const;
 	void closeConnection();
 	void closeMainConnection();
-	virtual IServerSocket* waitForSocket();
 private:
 	int sock, length;
 	mutable socklen_t fromlen;

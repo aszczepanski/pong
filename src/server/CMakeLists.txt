@@ -7,10 +7,11 @@ set(LIBS ${LIBS} pthread Box2D SDL2 opencv_core opencv_highgui opencv_imgproc sf
 
 set(SERVER_SRCS
   Communicator.cpp
+  ConnectionTCP.cpp
+  ConnectionUDP.cpp
   GameEngine.cpp
   IServerSocket.cpp
   ServerApplication.cpp
-  ServerConnection.cpp
   ServerTCP.cpp
   ServerUDP.cpp
 )

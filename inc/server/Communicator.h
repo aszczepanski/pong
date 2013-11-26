@@ -13,12 +13,14 @@ namespace common
 namespace server
 {
 
+class ServerTCP;
+
 class Communicator
 	: public common::ICommunicator
 {
 
 public:
-	Communicator(common::SharedMemory&);
+	Communicator(common::SharedMemory&, ServerTCP&);
 
 	void sendCursorPosition(const common::CursorPosition&) const;
 	void sendStartRequest() const;
@@ -27,7 +29,7 @@ public:
 
 private:
 
-	virtual void* start_routine();
+	ServerTCP& serverTCP;
 
 	mutable common::Mutex mutex;
 
