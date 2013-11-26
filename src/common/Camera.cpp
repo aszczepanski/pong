@@ -16,46 +16,10 @@ Camera::Camera(SharedMemory& sharedMemory)
   this->screen_width = 1280;
 }
 
-void Camera::run()
+Camera::~Camera()
 {
-  namedWindow(this->main_window, CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL);
-
-  cout << "camera main loop\n";
-
-  Mat input, original;
-  CvCapture *camCapture;
-
-  bool playing = true;
-
-  cvCaptureFromCAM(0);
-  if (!(camCapture = cvCaptureFromCAM(CV_CAP_ANY))) {
-    std::cout << "LOG: Failed to capture from camera\n";
-  }
-
-  std::cout << "LOG: Camera opened successfully\n";
-
-  IplImage *cameraFrame;
-
-  Mat bg;
-
-  int my_position = screen_width / 2, x;
-
-  while (playing) {
-    if ((cameraFrame = cvQueryFrame(camCapture))) {
-      bg = Mat(cameraFrame, false);
-      input = bg.clone();
-      x = getCenter(input);
-      if (x > 0) my_position = min(max(150, x), screen_width - 150);
-      line(bg, cvPoint(my_position, 0), cvPoint(my_position, 720), Scalar(0, 0, 255), 10, 8);
-      imshow(main_window, bg);
-      sharedMemory.setPlayerCameraPosition(x, 0);
-    }
-
-    if (cvWaitKey(2) != -1) {
-      std::cout << "LOG: Stopped by player\n";
-      playing = false;
-    }
-  }
+  cvDestroyAllWindows();
+  cvReleaseCapture(&camCapture);
 }
 
 void Camera::getHSV(HSV& hsv) const
@@ -70,7 +34,19 @@ void Camera::setHSV(HSV hsv)
 
 void Camera::getPosition(int& position) const
 {
-  position = this->position;
+  Mat input;
+  IplImage *cameraFrame;
+
+  int new_position = -1;
+
+  if ((cameraFrame = cvQueryFrame(camCapture))) {
+    input = Mat(cameraFrame, false);
+    new_position = getCenter(input);
+  }
+
+  if (new_position > 0) {
+    position = int(float(new_position) * 600.0/1280.0);
+  }
 }
 
 int Camera::getCenter(Mat &input) const
@@ -163,28 +139,27 @@ void Camera::measureHand(int event, int x, int y, int flags, void* param)
   }
 }
 
+void Camera::init()
+{
+  namedWindow(this->main_window, CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL);
+  if (!(this->camCapture = cvCaptureFromCAM(CV_CAP_ANY))) {
+    std::cout << "LOG: Failed to capture from camera\n";
+  }
+  std::cout << "LOG: Success!\n";
+}
+
 int Camera::configure()
 {
 
-  namedWindow(this->main_window, CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL);
   Mat input, original;
-
-  CvCapture *camCapture = NULL;
-  bool configuring = true;
-
-  // camera init
-  if (!(camCapture = cvCaptureFromCAM(CV_CAP_ANY))) {
-    std::cout << "LOG: Failed to capture from camera\n";
-    return -1;
-  }
-  std::cout << "LOG: Camera opened successfully << " << camCapture << "\n";
-
   IplImage *cameraFrame;
+
+  bool configuring = true;
 
   // first step starts here (taking snapshot)
   while (configuring)
   {
-    if ((cameraFrame = cvQueryFrame(camCapture)))
+    if ((cameraFrame = cvQueryFrame(this->camCapture)))
     {
       input = Mat(cameraFrame, false);
       imshow(main_window, input);
@@ -219,7 +194,6 @@ int Camera::configure()
       configuring = false;
     }
   }
-  cvReleaseCapture(&camCapture);
 
   // second step(2) starts here - init HSV values
   input = original.clone();
@@ -248,7 +222,6 @@ int Camera::configure()
   hsv.s_min = max(0, s - offset); hsv.s_max = min(255, s + offset);
   hsv.v_min = max(0, v - offset); hsv.v_max = min(255, v + offset);
 
-
   // third step - show image
   configuring = true;
   initTrackbars();
@@ -256,7 +229,8 @@ int Camera::configure()
   Mat backup;
   backup = input.clone();
 
-  while (configuring) {
+  while (configuring)
+  {
     processInput(input);
     imshow(main_window, input);
     input = backup.clone();
@@ -265,8 +239,6 @@ int Camera::configure()
       configuring = false;
     }
   }
-
-  cvDestroyAllWindows();
 
   position = getCenter(input);
 

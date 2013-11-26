@@ -50,7 +50,8 @@ void ServerApplication::start()
 #endif
 
 	Camera camera(sharedMemory);
-//	camera.configure();
+	camera.init();
+	camera.configure();
 
 	Communicator communicator(sharedMemory);
 

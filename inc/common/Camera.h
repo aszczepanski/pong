@@ -30,6 +30,7 @@ class Camera
 {
 public:
   Camera(common::SharedMemory&);
+  ~Camera();
 
   void getHSV(HSV& hsv) const;
   void setHSV(HSV hsv);
@@ -41,7 +42,7 @@ public:
 
   int getCenter(cv::Mat &input) const;
 
-  void run();
+  void init();
 
   static void measureHand(int event, int x, int y, int flags, void* param);
 
@@ -53,6 +54,7 @@ private:
   int screen_width;
   cv::string main_window;
   common::SharedMemory& sharedMemory;
+  CvCapture *camCapture;
 };
 
 }

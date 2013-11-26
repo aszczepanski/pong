@@ -75,10 +75,11 @@ void Drawer::run()
  	SDL_Rect rectangle;
  	SDL_Event e;
 */
-	
+
 
  	bool quit = false;
  	int lastX, lastY;
+
  	while (!quit)
  	{
 /*
@@ -111,13 +112,14 @@ void Drawer::run()
 				//printf("\t\t%d %d\n", e.motion.x, e.motion.y);
 			}
 		}
-    
+
 
  		SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
  		SDL_RenderClear(ren);
 */
 		sf::Vector2i mpos = sf::Mouse::getPosition(window);
 
+    camera.getPosition(mpos.x);
 		if (mpos.x >= 0 && mpos.y >= 0 && mpos.x < 600 && mpos.y < 600)
 		{
 			communicator.sendCursorPosition(CursorPosition(mpos.x, mpos.y));
@@ -164,6 +166,7 @@ void Drawer::run()
  		rectangle.h = 14;
  		SDL_RenderFillRect(ren, &rectangle);
 */
+
 		sf::RectangleShape bottomPlayer(sf::Vector2f(80, 14));
 		bottomPlayer.setPosition(positionX - 40, positionY - 7);
 		bottomPlayer.setFillColor(sf::Color::Red);
@@ -204,7 +207,7 @@ void Drawer::run()
  		rectangle.h = 600;
  		SDL_RenderFillRect(ren, &rectangle);
 */
-		
+
 		sf::RectangleShape leftBorder(sf::Vector2f(60, 600));
 		leftBorder.setPosition(-30, 0);
 		leftBorder.setFillColor(sf::Color::Blue);
@@ -238,8 +241,6 @@ void Drawer::run()
 		window.draw(rightBorder);
 
 		window.display();
-
- 		SDL_Delay((int)(1000.0/60.0));
 
  		sharedMemory.getEnded(quit);
  	}
