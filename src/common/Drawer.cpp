@@ -2,6 +2,7 @@
 #include <common/SharedMemory.h>
 #include <common/ICommunicator.h>
 #include <common/CursorPosition.h>
+#include <common/Camera.h>
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <SFML/Window.hpp>
@@ -11,14 +12,16 @@ using namespace common;
 
 #define USE_SDL
 
-Drawer::Drawer(SharedMemory& sharedMemory, ICommunicator& communicator)
-	: sharedMemory(sharedMemory), communicator(communicator)
+Drawer::Drawer(SharedMemory& sharedMemory, ICommunicator& communicator, Camera& camera)
+	: sharedMemory(sharedMemory), communicator(communicator), camera(camera)
 {
 }
 
-void* Drawer::start_routine()
+void Drawer::run()
 {
 	std::cout << "Drawer thread" << std::endl;
+
+//	camera.configure()
 
 #ifndef USE_SDL
   int x;
@@ -145,7 +148,7 @@ void* Drawer::start_routine()
 		window.clear(sf::Color::Black);
 
 		sf::CircleShape circle(16);
-		circle.setPosition(positionX, positionY);
+		circle.setPosition(positionX - 16, positionY - 16);
 		circle.setFillColor(sf::Color::Green);
 		window.draw(circle);
 
@@ -167,36 +170,60 @@ void* Drawer::start_routine()
 		window.draw(bottomPlayer);
 
  		// draw top platform
-/* 		player[1].getPosition(positionX, positionY);
+ 		player[1].getPosition(positionX, positionY);
  		//std::cout << positionX << " " << positionY << std::endl;
- 		SDL_SetRenderDrawColor(ren, 255, 255, 0, 255);
+/* 		SDL_SetRenderDrawColor(ren, 255, 255, 0, 255);
  		rectangle.x = positionX - 40;
  		rectangle.y = positionY - 7;
  		rectangle.w = 80;
  		rectangle.h = 14;
  		SDL_RenderFillRect(ren, &rectangle);
+*/
 
- 		SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
+		sf::RectangleShape topPlayer(sf::Vector2f(80, 14));
+		topPlayer.setPosition(positionX - 40, positionY - 7);
+		topPlayer.setFillColor(sf::Color::Yellow);
+		window.draw(topPlayer);
+
+/*		SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
  		rectangle.x = 0;
  		rectangle.y = -30;
  		rectangle.w = 600;
  		rectangle.h = 60;
- 		SDL_RenderFillRect(ren, &rectangle);
+		SDL_RenderFillRect(ren, &rectangle);
+*/
 
- 		rectangle.x = -30;
+		sf::RectangleShape topBorder(sf::Vector2f(600, 60));
+		topBorder.setPosition(0, -30);
+		topBorder.setFillColor(sf::Color::Blue);
+		window.draw(topBorder);
+
+/*		rectangle.x = -30;
  		rectangle.y = 0;
  		rectangle.w = 60;
  		rectangle.h = 600;
  		SDL_RenderFillRect(ren, &rectangle);
+*/
+		
+		sf::RectangleShape leftBorder(sf::Vector2f(60, 600));
+		leftBorder.setPosition(-30, 0);
+		leftBorder.setFillColor(sf::Color::Blue);
+		window.draw(leftBorder);
 
- 		SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
+/* 		SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
  		rectangle.x = 0;
  		rectangle.y = 570;
  		rectangle.w = 600;
  		rectangle.h = 60;
  		SDL_RenderFillRect(ren, &rectangle);
+*/
 
- 		rectangle.x = 570;
+		sf::RectangleShape bottomBorder(sf::Vector2f(600, 60));
+		bottomBorder.setPosition(0, 570);
+		bottomBorder.setFillColor(sf::Color::Blue);
+		window.draw(bottomBorder);
+
+/* 		rectangle.x = 570;
  		rectangle.y = 0;
  		rectangle.w = 60;
  		rectangle.h = 600;
@@ -204,6 +231,11 @@ void* Drawer::start_routine()
  		SDL_RenderPresent(ren);
 
 */
+
+		sf::RectangleShape rightBorder(sf::Vector2f(60, 600));
+		rightBorder.setPosition(570, 0);
+		rightBorder.setFillColor(sf::Color::Blue);
+		window.draw(rightBorder);
 
 		window.display();
 
@@ -218,6 +250,4 @@ void* Drawer::start_routine()
 
 // 	SDL_Quit();
 #endif
-
-	return NULL;
 }

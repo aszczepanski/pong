@@ -1,25 +1,24 @@
 #ifndef DRAWER_H
 #define DRAWER_H
 
-#include <common/IThread.h>
-#include <common/Camera.h>
 namespace common
 {
 
 class ICommunicator;
 class SharedMemory;
+class Camera;
 
 class Drawer
-	: public common::IThread
 {
 
 public:
-	Drawer(common::SharedMemory&, ICommunicator&);
+	Drawer(common::SharedMemory&, ICommunicator&, Camera&);
+	void run();
 
 private:
-	virtual void* start_routine();
 	common::SharedMemory& sharedMemory;
 	ICommunicator& communicator;
+	Camera& camera;
 };
 
 }

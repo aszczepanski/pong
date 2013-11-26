@@ -49,15 +49,16 @@ void ServerApplication::start()
 	serverConnection->run();
 #endif
 
-//	Camera camera(sharedMemory);
+	Camera camera(sharedMemory);
 //	camera.configure();
 
 	Communicator communicator(sharedMemory);
 
-	Drawer drawer(sharedMemory, communicator);
-	drawer.run();
+	Drawer drawer(sharedMemory, communicator, camera);
 
 	gameEngine.run();
+
+	drawer.run();
 
 //	camera.run();
 
@@ -67,7 +68,7 @@ void ServerApplication::start()
 	serverConnection->wait();
 #endif
 
-	drawer.wait();
+//	drawer.wait();
 
 #ifndef SERVER_ONLY
 	delete tmpServer;

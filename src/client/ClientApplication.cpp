@@ -4,6 +4,7 @@
 #include <client/ClientUDP.h>
 #include <common/Drawer.h>
 #include <common/SharedMemory.h>
+#include <common/Camera.h>
 #include <client/Communicator.h>
 #include <iostream>
 #include <string>
@@ -29,10 +30,10 @@ int main(int argc, char* argv[])
 	Communicator communicator(sharedMemory, clientUDP);
 
 	Camera camera(sharedMemory);
-	camera.configure();
-	camera.run();
+	//camera.configure();
+	//camera.run();
 
-	Drawer drawer(sharedMemory, communicator);
+	Drawer drawer(sharedMemory, communicator, camera);
 
 	ClientApplication clientApplication(sharedMemory, drawer, clientUDP, communicator);
 	clientApplication.start();
@@ -53,7 +54,7 @@ void ClientApplication::start()
 	communicator.run();
 	drawer.run();
 
-	drawer.wait();
+	//drawer.wait();
 
 	communicator.wait();
 
