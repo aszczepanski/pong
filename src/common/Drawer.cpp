@@ -119,6 +119,7 @@ void Drawer::run()
  		SDL_RenderClear(ren);
 */
 		sf::Vector2i mpos = sf::Mouse::getPosition(window);
+		camera.getPosition(mpos.x);
 
 //    camera.getPosition(mpos.x);
 		mpos.x = std::max(mpos.x, 0);

@@ -1,13 +1,9 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include <math.h>
-#include <iostream>
-#include <common/IThread.h>
-#include <common/Mutex.h>
-#include <string>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <stdexcept>
 
 namespace common
 {
@@ -28,20 +24,36 @@ public:
   Camera(common::SharedMemory&);
   ~Camera();
 
-  void getPosition(int& position) const;
-  void init();
-  static void onMouse(int event, int x, int y, int flags, void* param);
+  void getPosition(int& position);
   int configure();
   void setTracking();
 
 private:
-  int screen_width;
-  cv::string main_window;
+  static void onMouse(int event, int x, int y, int flags, void* param);
+
   common::SharedMemory& sharedMemory;
-  CvCapture *camCapture;
+
+  cv::VideoCapture camCapture;
+  cv::Rect trackWindow;
+  cv::RotatedRect trackBox;
+  int hsize;
+  float hranges[2];
+  const float* phranges;
+  const cv::string main_window;
+
   Selection area;
   bool backprojMode;
   int trackObject;
+
+  int vmin, vmax, smin;
+
+  // IplImage *cameraFrame;
+
+  cv::Mat image, frame, hsv, hue, mask, hist, histimg, backproj;
+
+  class OpenCameraException : public std::exception {};
+  class CaptureException : public std::exception {};
+
 };
 
 }
