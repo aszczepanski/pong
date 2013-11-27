@@ -32,6 +32,7 @@ public:
   void init();
   static void onMouse(int event, int x, int y, int flags, void* param);
   int configure();
+  void setTracking();
 
 private:
   int screen_width;

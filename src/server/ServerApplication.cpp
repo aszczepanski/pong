@@ -60,6 +60,9 @@ void ServerApplication::start()
 	camera.init();
 	camera.configure();
 
+	int x;
+	camera.getPosition(x);
+
 	// Communicator communicator(sharedMemory, serverTCP);
 
 	// Drawer drawer(sharedMemory, communicator, camera);

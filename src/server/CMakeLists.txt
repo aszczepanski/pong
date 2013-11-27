@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
 set(LIBS common)
-set(LIBS ${LIBS} pthread Box2D SDL2 opencv_core opencv_highgui opencv_imgproc sfml-system sfml-graphics sfml-window)
+set(LIBS ${LIBS} pthread Box2D SDL2 opencv_core opencv_video opencv_highgui opencv_imgproc sfml-system sfml-graphics sfml-window)
 
 set(SERVER_SRCS
   Communicator.cpp
