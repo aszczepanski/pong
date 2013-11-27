@@ -15,22 +15,16 @@ Camera::Camera(SharedMemory& sharedMemory)
 {
   this->main_window = "Pong Configuration";
   this->screen_width = 1280;
+  this->backprojMode = false;
+  this->area.selectObject = false;
+  this->area.ready = false;
+  this->trackObject = 0;
 }
 
 Camera::~Camera()
 {
   cvDestroyAllWindows();
-  //cvReleaseCapture(&camCapture);
-}
-
-void Camera::getHSV(HSV& hsv) const
-{
-  hsv = this->hsv;
-}
-
-void Camera::setHSV(HSV hsv)
-{
-  this->hsv = hsv;
+  cvReleaseCapture(&camCapture);
 }
 
 void Camera::getPosition(int& position) const
@@ -42,101 +36,32 @@ void Camera::getPosition(int& position) const
 
   if ((cameraFrame = cvQueryFrame(camCapture))) {
     input = Mat(cameraFrame, false);
-    new_position = getCenter(input);
-  }
-
-  if (new_position > 0) {
-    position = int(float(new_position) * 600.0/1280.0);
   }
 }
 
-int Camera::getCenter(Mat &input) const
+void Camera::onMouse(int event, int x, int y, int flags, void* param)
 {
-  int largest_area, largest_contour_index = 0;
-  Rect bounding_rect;
-
-  blur(input, input, Size(5, 5));
-  processInput(input);
-
-  Canny(input, input, 20, 100, 3);
-
-  vector<vector<Point> > contours;
-  vector<Vec4i> hierarchy;
-
-  findContours(input, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
-
-  if (contours.size() > 0)
+  Selection* obj = (Selection*) param;
+  if(obj->selectObject)
   {
-    for (int i = 0; i < contours.size(); i++ )
-    {
-      double a = contourArea(contours[i], false);
-      if (a > largest_area)
-      {
-        largest_area = a;
-        largest_contour_index=i;
-        bounding_rect=boundingRect(contours[i]);
-      }
-    }
-    Moments mu = moments(contours[largest_contour_index], false);
-    Point2f center = Point2f(mu.m10/mu.m00 , mu.m01/mu.m00);
-    return int(center.x);
+    obj->field.x = MIN(x, obj->start.x);
+    obj->field.y = MIN(y, obj->start.y);
+    obj->field.width = std::abs(x - obj->start.x);
+    obj->field.height = std::abs(y - obj->start.y);
   }
-  return 0;
-}
 
-void Camera::processInput(Mat &input) const
-{
-  // Mat erodeElement = getStructuringElement( MORPH_RECT,Size(3,3));
-  // Mat dilateElement = getStructuringElement( MORPH_RECT,Size(8,8));
-  Mat hsv_mat;
-
-  cv::cvtColor(input, hsv_mat, COLOR_BGR2HSV);
-
-  inRange(hsv_mat, Scalar(hsv.h_min, hsv.s_min, hsv.s_min), Scalar(hsv.h_max, hsv.s_max, hsv.v_max), input);
-
-  // erode(input, input, erodeElement);
-  // erode(input, input, erodeElement);
-  // dilate(input, input, dilateElement);
-  // dilate(input, input, dilateElement);
-}
-
-void Camera::initTrackbars()
-{
-  char TrackbarName[50];
-  sprintf(TrackbarName, "H (min) %d", hsv.h_min);
-  sprintf(TrackbarName, "H (max) %d", hsv.h_max);
-  sprintf(TrackbarName, "S (min) %d", hsv.s_min);
-  sprintf(TrackbarName, "S (max) %d", hsv.s_max);
-  sprintf(TrackbarName, "V (min) %d", hsv.v_min);
-  sprintf(TrackbarName, "V (max) %d", hsv.v_max);
-
-  createTrackbar("H (min)", main_window, &hsv.h_min, 255, NULL);
-  createTrackbar("H (max)", main_window, &hsv.h_max, 255, NULL);
-  createTrackbar("S (min)", main_window, &hsv.s_min, 255, NULL);
-  createTrackbar("S (max)", main_window, &hsv.s_max, 255, NULL);
-  createTrackbar("V (min)", main_window, &hsv.v_min, 255, NULL);
-  createTrackbar("V (max)", main_window, &hsv.v_max, 255, NULL);
-}
-
-void Camera::measureHand(int event, int x, int y, int flags, void* param)
-{
-  Drawing* obj = (Drawing*) param;
-  if (event == CV_EVENT_MOUSEMOVE)
+  switch( event )
   {
-    if ((*obj).drag_drop == true)
-    {
-      (*obj).radius = sqrt(pow(abs((*obj).point.x - x), 2) + pow(abs((*obj).point.y - y), 2));
-    }
-  }
-  else if (event == CV_EVENT_LBUTTONDOWN)
-  {
-    (*obj).drag_drop = true;
-    (*obj).point.x = x;
-    (*obj).point.y = y;
-  }
-  else if (event == CV_EVENT_LBUTTONUP)
-  {
-    (*obj).drag_drop = false;
+  case CV_EVENT_LBUTTONDOWN:
+    obj->start = Point(x,y);
+    obj->field = Rect(x,y,0,0);
+    obj->selectObject = true;
+    break;
+  case CV_EVENT_LBUTTONUP:
+    obj->selectObject = false;
+    obj->ready = true;
+    std::cout << "ready to work\n";
+    break;
   }
 }
 
@@ -157,12 +82,28 @@ int Camera::configure()
 
   bool configuring = true;
 
+
+  Selection tmp_area;
+  Selection *tmp_area_ptr = &tmp_area;
+  setMouseCallback(main_window, onMouse, tmp_area_ptr);
+
   // first step starts here (taking snapshot)
   while (configuring)
   {
     if ((cameraFrame = cvQueryFrame(this->camCapture)))
     {
       input = Mat(cameraFrame, false);
+
+      if(tmp_area.selectObject && tmp_area.field.width > 0 && tmp_area.field.height > 0)
+      {
+        Mat roi(input, this->area.field);
+        bitwise_not(roi, roi);
+        this->area.field = tmp_area.field;
+      }
+      if(tmp_area.ready) {
+        configuring = false;
+        this->trackObject = -1;
+      }
       imshow(main_window, input);
     }
 
@@ -171,77 +112,5 @@ int Camera::configure()
       configuring = false;
     }
   }
-
-  // second step starts here (pointing to object)
-  configuring = true;
-  original = input.clone();
-
-  Drawing obj;
-  Drawing *obj_ptr = &obj;
-  obj.radius = 0;
-  obj.drag_drop = false;
-
-  while (configuring)
-  {
-    imshow(main_window, input);
-    cv::setMouseCallback(main_window, measureHand, obj_ptr);
-    if (obj.radius > 0 && obj.drag_drop == true)
-    {
-      input = original.clone();
-      circle(input, obj.point, obj.radius, Scalar(0, 0, 255), 5, 8, 0);
-    }
-
-    if (cvWaitKey(30) != -1) {
-      configuring = false;
-    }
-  }
-
-  // second step(2) starts here - init HSV values
-  input = original.clone();
-  cvtColor(input, original, COLOR_BGR2HSV);
-
-  int h = 0, s = 0, v = 0, count = 0, offset = 30;
-  Vec3d pixel;
-
-  int pt_x = obj.point.x, pt_y = obj.point.y, pt_r = obj.radius;
-
-  for(int x = pt_x - pt_r; x < pt_x + pt_r; x++)
-  {
-    for(int y = pt_y - pt_r; y < pt_y + pt_r; y++)
-    {
-      Vec3b bgrPixel = original.at<Vec3b>(y, x);
-      h += (int)bgrPixel[0];
-      s += (int)bgrPixel[1];
-      v += (int)bgrPixel[2];
-      count++;
-    }
-  }
-
-  h /= count; s /= count; v /= count;
-
-  hsv.h_min = max(0, h - offset); hsv.h_max = min(255, h + offset);
-  hsv.s_min = max(0, s - offset); hsv.s_max = min(255, s + offset);
-  hsv.v_min = max(0, v - offset); hsv.v_max = min(255, v + offset);
-
-  // third step - show image
-  configuring = true;
-  initTrackbars();
-
-  Mat backup;
-  backup = input.clone();
-
-  while (configuring)
-  {
-    processInput(input);
-    imshow(main_window, input);
-    input = backup.clone();
-
-    if (cvWaitKey(30) != -1) {
-      configuring = false;
-    }
-  }
-
-  position = getCenter(input);
-
   return 0;
 }

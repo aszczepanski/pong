@@ -12,16 +12,12 @@
 namespace common
 {
 
-struct HSV
+struct Selection
 {
-  int h_min, h_max, s_min, s_max, v_min, v_max;
-};
-
-struct Drawing
-{
-  CvPoint point;
-  int radius;
-  bool drag_drop;
+  bool selectObject;
+  bool ready;
+  cv::Rect field;
+  cv::Point start;
 };
 
 class SharedMemory;
@@ -32,29 +28,19 @@ public:
   Camera(common::SharedMemory&);
   ~Camera();
 
-  void getHSV(HSV& hsv) const;
-  void setHSV(HSV hsv);
-
   void getPosition(int& position) const;
-
-  void initTrackbars();
-  void processInput(cv::Mat &input) const;
-
-  int getCenter(cv::Mat &input) const;
-
   void init();
-
-  static void measureHand(int event, int x, int y, int flags, void* param);
-
+  static void onMouse(int event, int x, int y, int flags, void* param);
   int configure();
 
 private:
-  int position;
-  HSV hsv;
   int screen_width;
   cv::string main_window;
   common::SharedMemory& sharedMemory;
   CvCapture *camCapture;
+  Selection area;
+  bool backprojMode;
+  int trackObject;
 };
 
 }

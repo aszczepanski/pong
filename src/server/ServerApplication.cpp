@@ -57,18 +57,18 @@ void ServerApplication::start()
 #endif
 
 	Camera camera(sharedMemory);
-//	camera.init();
-//	camera.configure();
+	camera.init();
+	camera.configure();
 
-	Communicator communicator(sharedMemory, serverTCP);
+	// Communicator communicator(sharedMemory, serverTCP);
 
-	Drawer drawer(sharedMemory, communicator, camera);
+	// Drawer drawer(sharedMemory, communicator, camera);
 
-	gameEngine.run();
+	// gameEngine.run();
 
-	drawer.run();
+	// drawer.run();
 
-	gameEngine.wait();
+	// gameEngine.wait();
 
 #ifndef SERVER_ONLY
 	connectionTCP.wait();
