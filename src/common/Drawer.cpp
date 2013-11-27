@@ -11,8 +11,6 @@
 
 using namespace common;
 
-#define USE_SDL
-
 Drawer::Drawer(SharedMemory& sharedMemory, ICommunicator& communicator, Camera& camera)
 	: sharedMemory(sharedMemory), communicator(communicator), camera(camera)
 {
@@ -22,106 +20,16 @@ void Drawer::run()
 {
 	std::cout << "Drawer thread" << std::endl;
 
-//	camera.configure()
-
-#ifndef USE_SDL
-  int x;
-  bool playing = true;
-  while(playing)
-  {
-    sharedMemory.getPlayerCameraPosition(x, 0);
-    std::cout << x << "\n";
-  }
-#endif
-
-#ifdef USE_SDL
-
 	sf::RenderWindow window(sf::VideoMode(600, 600, 32), "Pong!");
-
-/*
- 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
- 	{
- 		std::cout << SDL_GetError() << std::endl;
- //		return 1;
- 	}
-
- 	SDL_Window *win;
- 	win = SDL_CreateWindow("Pong!", 100, 100, 600, 600, SDL_WINDOW_SHOWN);
- 	if (!win)
- 	{
- 		std::cout << SDL_GetError() << std::endl;
- //		return 1;
- 	}
-
- 	SDL_Renderer *ren;
- 	ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
- 	if (!ren)
- 	{
- 		std::cout << SDL_GetError() << std::endl;
- //		return 1;
- 	}
-
- 	SDL_Surface *bmp;
- 	bmp = SDL_LoadBMP("green.bmp");
- 	if (!bmp)
- 	{
- 		std::cout << SDL_GetError() << std::endl;
- //		return 1;
- 	}
-
- 	SDL_Texture *greenTex;
- 	greenTex = SDL_CreateTextureFromSurface(ren, bmp);
- 	SDL_FreeSurface(bmp);
-
- 	SDL_Rect rectangle;
- 	SDL_Event e;
-*/
-
 
  	bool quit = false;
  	int lastX, lastY;
 
  	while (!quit)
  	{
-/*
-		while (SDL_PollEvent(&e))
-		{
-			if (e.type == SDL_QUIT)
-			{
-				quit = true;
-				communicator.sendEndRequest();
-			}
-			if (e.type == SDL_KEYDOWN)
-			{
-				switch (e.key.keysym.sym)
-				{
-					case SDLK_SPACE:
-						std::cout << "space" << std::endl;
-						communicator.sendStartRequest();
-						break;
-					case SDLK_ESCAPE:
-						std::cout << "escape" << std::endl;
-						communicator.sendEndRequest();
-						break;
-				}
-			}
-			if (e.type == SDL_MOUSEMOTION)
-			{
-				lastX = e.motion.x;
-				lastY = e.motion.y;
-				communicator.sendCursorPosition(CursorPosition(lastX, lastY));
-				//printf("\t\t%d %d\n", e.motion.x, e.motion.y);
-			}
-		}
-
-
- 		SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
- 		SDL_RenderClear(ren);
-*/
 		sf::Vector2i mpos = sf::Mouse::getPosition(window);
 		camera.getPosition(mpos.x);
 
-//    camera.getPosition(mpos.x);
 		mpos.x = std::max(mpos.x, 0);
 		mpos.x = std::min(mpos.x, 599);
 
@@ -147,13 +55,6 @@ void Drawer::run()
  		sharedMemory.getCurrentState(ball, player[0], player[1]);
 
  		ball.getPosition(positionX, positionY);
- 		//std::cout << positionX << " " << positionY << std::endl;
-/* 		rectangle.x = positionX - 16;
- 		rectangle.y = positionY - 16;
- 		rectangle.w = 32;
- 		rectangle.h = 32;
- 		SDL_RenderCopy(ren, greenTex, NULL, &rectangle);
-*/
 		window.clear(sf::Color::Black);
 
 		sf::CircleShape circle(16);
@@ -164,14 +65,6 @@ void Drawer::run()
 
  		// draw bottom platform
  		player[0].getPosition(positionX, positionY);
- 		//std::cout << positionX << " " << positionY << std::endl;
-/* 		SDL_SetRenderDrawColor(ren, 255, 0, 0, 255);
- 		rectangle.x = positionX - 40;
- 		rectangle.y = positionY - 7;
- 		rectangle.w = 80;
- 		rectangle.h = 14;
- 		SDL_RenderFillRect(ren, &rectangle);
-*/
 
 		sf::RectangleShape bottomPlayer(sf::Vector2f(80, 14));
 		bottomPlayer.setPosition(positionX - 40, positionY - 7);
@@ -180,66 +73,26 @@ void Drawer::run()
 
  		// draw top platform
  		player[1].getPosition(positionX, positionY);
- 		//std::cout << positionX << " " << positionY << std::endl;
-/* 		SDL_SetRenderDrawColor(ren, 255, 255, 0, 255);
- 		rectangle.x = positionX - 40;
- 		rectangle.y = positionY - 7;
- 		rectangle.w = 80;
- 		rectangle.h = 14;
- 		SDL_RenderFillRect(ren, &rectangle);
-*/
 
 		sf::RectangleShape topPlayer(sf::Vector2f(80, 14));
 		topPlayer.setPosition(positionX - 40, positionY - 7);
 		topPlayer.setFillColor(sf::Color::Yellow);
 		window.draw(topPlayer);
 
-/*		SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
- 		rectangle.x = 0;
- 		rectangle.y = -30;
- 		rectangle.w = 600;
- 		rectangle.h = 60;
-		SDL_RenderFillRect(ren, &rectangle);
-*/
-
 		sf::RectangleShape topBorder(sf::Vector2f(600, 60));
 		topBorder.setPosition(0, -30);
 		topBorder.setFillColor(sf::Color::Blue);
 		window.draw(topBorder);
-
-/*		rectangle.x = -30;
- 		rectangle.y = 0;
- 		rectangle.w = 60;
- 		rectangle.h = 600;
- 		SDL_RenderFillRect(ren, &rectangle);
-*/
 
 		sf::RectangleShape leftBorder(sf::Vector2f(60, 600));
 		leftBorder.setPosition(-30, 0);
 		leftBorder.setFillColor(sf::Color::Blue);
 		window.draw(leftBorder);
 
-/* 		SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
- 		rectangle.x = 0;
- 		rectangle.y = 570;
- 		rectangle.w = 600;
- 		rectangle.h = 60;
- 		SDL_RenderFillRect(ren, &rectangle);
-*/
-
 		sf::RectangleShape bottomBorder(sf::Vector2f(600, 60));
 		bottomBorder.setPosition(0, 570);
 		bottomBorder.setFillColor(sf::Color::Blue);
 		window.draw(bottomBorder);
-
-/* 		rectangle.x = 570;
- 		rectangle.y = 0;
- 		rectangle.w = 60;
- 		rectangle.h = 600;
- 		SDL_RenderFillRect(ren, &rectangle);
- 		SDL_RenderPresent(ren);
-
-*/
 
 		sf::RectangleShape rightBorder(sf::Vector2f(60, 600));
 		rightBorder.setPosition(570, 0);
@@ -252,11 +105,4 @@ void Drawer::run()
 
 		usleep(25000);
  	}
-
-// 	SDL_DestroyTexture(greenTex);
-//	SDL_DestroyRenderer(ren);
-// 	SDL_DestroyWindow(win);
-
-// 	SDL_Quit();
-#endif
 }
