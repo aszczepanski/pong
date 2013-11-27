@@ -33,7 +33,7 @@ private:
 
   common::SharedMemory& sharedMemory;
 
-  cv::VideoCapture camCapture;
+  CvCapture *camCapture;
   cv::Rect trackWindow;
   cv::RotatedRect trackBox;
   int hsize;

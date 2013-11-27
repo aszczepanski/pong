@@ -14,7 +14,7 @@ using namespace std;
 bool drag_drop = false;
 
 Camera::Camera(SharedMemory& sharedMemory)
-	: sharedMemory(sharedMemory), hsize(16), hranges{0,180}, 
+	: sharedMemory(sharedMemory), hsize(16), hranges{0,180},
 		phranges(hranges), main_window("Pong Configuration"),
 		trackObject(-1), histimg(Mat::zeros(200, 320, CV_8UC3))
 {
@@ -26,15 +26,13 @@ Camera::Camera(SharedMemory& sharedMemory)
 //  namedWindow(main_window, CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL);
   namedWindow(main_window, CV_WINDOW_AUTOSIZE);
 
-  camCapture.open(0);
-  if (!camCapture.isOpened())
+  if (!(camCapture = cvCaptureFromCAM(CV_CAP_ANY)))
   {
-	  std::cout << "LOG: Failed to capture from camera\n";
-	  throw OpenCameraException();
+    std::cout << "LOG: Failed to capture from camera\n";
+    throw OpenCameraException();
   }
-  else
-  {
-	  std::cout << "LOG: Success!\n";
+  else {
+    std::cout << "LOG: Success!\n";
   }
 }
 
@@ -49,12 +47,18 @@ void Camera::setTracking()
 
 void Camera::getPosition(int& position)
 {
-	camCapture >> frame;	
 
-	if (!frame.empty())
-	{
+  IplImage *cameraFrame;
+
+  Mat tmp;
+
+  if ((cameraFrame = cvQueryFrame(camCapture)))
+  {
+    tmp = Mat(cameraFrame, false);
+    tmp.copyTo(frame);
+
 		flip(frame, image, 1);
-//		frame.copyTo(image);
+// //		frame.copyTo(image);
 		cvtColor(image, hsv, CV_BGR2HSV);
 
 		int _vmin = 10, _vmax = 256;
@@ -141,28 +145,35 @@ int Camera::configure()
 	tmp_area.ready = false;
 	setMouseCallback(main_window, onMouse, &tmp_area);
 
+  IplImage *cameraFrame;
+
+  Mat tmp;
+
 	// first step starts here (taking snapshot)
 	while (configuring)
 	{
-		camCapture >> original;
-		if (original.empty())
-		{
-			throw CaptureException();
-		}
 
-		flip(original, image, 1);
+    if ((cameraFrame = cvQueryFrame(camCapture)))
+    {
 
-		if(tmp_area.selectObject && tmp_area.field.width > 0 && tmp_area.field.height > 0)
-		{
-			Mat roi(image, this->area.field);
-			bitwise_not(roi, roi);
-			this->area.field = tmp_area.field;
-		}
-		if(tmp_area.ready) {
-			configuring = false;
-			this->trackObject = -1;
-		}
-		imshow(main_window, image);
+      tmp = Mat(cameraFrame, false);
+      tmp.copyTo(original);
+
+  		flip(original, image, 1);
+
+  		if(tmp_area.selectObject && tmp_area.field.width > 0 && tmp_area.field.height > 0)
+  		{
+  			Mat roi(image, this->area.field);
+  			bitwise_not(roi, roi);
+  			this->area.field = tmp_area.field;
+  		}
+  		if(tmp_area.ready)
+      {
+  			configuring = false;
+  			this->trackObject = -1;
+  		}
+  		imshow(main_window, image);
+    }
 
 		if (cvWaitKey(30) != -1)
 		{
