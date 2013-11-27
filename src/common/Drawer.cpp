@@ -24,27 +24,29 @@ void Drawer::run()
 
  	bool quit = false;
  	int lastX, lastY;
+ 	float tmp_position;
 
  	while (!quit)
  	{
 		sf::Vector2i mpos = sf::Mouse::getPosition(window);
-		camera.getPosition(mpos.x);
+		camera.getPosition(tmp_position);
+		mpos.x = int(tmp_position * 600);
 
 		mpos.x = std::max(mpos.x, 0);
 		mpos.x = std::min(mpos.x, 599);
 
 		communicator.sendCursorPosition(CursorPosition(mpos.x, mpos.y));
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-		{
-			std::cout << "escape" << std::endl;
-			communicator.sendEndRequest();
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-		{
-			std::cout << "space" << std::endl;
-			communicator.sendStartRequest();
-		}
+		// if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+		// {
+		// 	std::cout << "escape" << std::endl;
+		// 	// communicator.sendEndRequest();
+		// }
+		// if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+		// {
+		// 	std::cout << "space" << std::endl;
+		// 	// communicator.sendStartRequest();
+		// }
 
  		int positionX, positionY;
 

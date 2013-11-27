@@ -45,7 +45,7 @@ void Camera::setTracking()
 	this->trackObject = 1;
 }
 
-void Camera::getPosition(int& position)
+void Camera::getPosition(float& position)
 {
 
   IplImage *cameraFrame;
@@ -99,9 +99,8 @@ void Camera::getPosition(int& position)
 
 		ellipse( image, trackBox, Scalar(0,0,255), 3, CV_AA );
 
-		std::cout << "centered at: " << trackBox.center.x << "\n";
-		position = trackBox.center.x;
-
+		// std::cout << "centered at: " << trackBox.center.x << "\n";
+		position = float(trackBox.center.x) / float(image.cols);
 		imshow(main_window, image);
 
 		cv::waitKey(30);

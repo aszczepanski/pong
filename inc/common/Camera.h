@@ -24,7 +24,7 @@ public:
   Camera(common::SharedMemory&);
   ~Camera();
 
-  void getPosition(int& position);
+  void getPosition(float& position);
   int configure();
   void setTracking();
 
