@@ -23,7 +23,8 @@ Camera::Camera(SharedMemory& sharedMemory)
   this->area.ready = false;
   this->trackObject = 0;
 
-  namedWindow(this->main_window, CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL);
+//  namedWindow(main_window, CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL);
+  namedWindow(main_window, CV_WINDOW_AUTOSIZE);
 
   camCapture.open(0);
   if (!camCapture.isOpened())
