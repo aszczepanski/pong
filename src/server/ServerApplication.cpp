@@ -17,7 +17,7 @@
 using namespace server;
 using namespace common;
 
-#define SERVER_ONLY
+//#define SERVER_ONLY
 
 int main(int argc, char* argv[])
 {
@@ -40,10 +40,11 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-ServerApplication::ServerApplication(SharedMemory& sharedMemory, GameEngine& gameEngine, ServerTCP& serverTCP, ServerUDP& serverUDP)
-	: sharedMemory(sharedMemory), gameEngine(gameEngine),
-		serverTCP(serverTCP), connectionTCP(serverTCP, sharedMemory, 1),
-		serverUDP(serverUDP), connectionUDP(serverUDP, sharedMemory, 1)
+ServerApplication::ServerApplication(SharedMemory& sharedMemory, GameEngine& gameEngine,
+	ServerTCP& serverTCP, ServerUDP& serverUDP)
+: sharedMemory(sharedMemory), gameEngine(gameEngine),
+	serverTCP(serverTCP), connectionTCP(serverTCP, sharedMemory, 1),
+	serverUDP(serverUDP), connectionUDP(serverUDP, sharedMemory, 1)
 {
 }
 
@@ -56,19 +57,20 @@ void ServerApplication::start()
 	connectionUDP.run();
 #endif
 
-	Camera camera(sharedMemory);
-	camera.configure();
+//	Camera camera(sharedMemory);
+//	camera.configure();
 
 
-	 Communicator communicator(sharedMemory, serverTCP);
+	Communicator communicator(sharedMemory, serverTCP);
 
-	 Drawer drawer(sharedMemory, communicator, camera);
+//	Drawer drawer(sharedMemory, communicator, &camera);
+	Drawer drawer(sharedMemory, communicator);
 
-	 gameEngine.run();
+	gameEngine.run();
 
-	 drawer.run();
+	drawer.run();
 
-	 gameEngine.wait();
+	gameEngine.wait();
 
 #ifndef SERVER_ONLY
 	connectionTCP.wait();

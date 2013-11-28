@@ -4,14 +4,14 @@
 #include <common/CursorPosition.h>
 #include <common/Camera.h>
 #include <iostream>
-#include <SDL2/SDL.h>
+#include <cstddef>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <unistd.h>
 
 using namespace common;
 
-Drawer::Drawer(SharedMemory& sharedMemory, ICommunicator& communicator, Camera& camera)
+Drawer::Drawer(SharedMemory& sharedMemory, ICommunicator& communicator, Camera* camera)
 	: sharedMemory(sharedMemory), communicator(communicator), camera(camera)
 {
 }
@@ -23,30 +23,33 @@ void Drawer::run()
 	sf::RenderWindow window(sf::VideoMode(600, 600, 32), "Pong!");
 
  	bool quit = false;
- 	int lastX, lastY;
  	float tmp_position;
 
  	while (!quit)
  	{
 		sf::Vector2i mpos = sf::Mouse::getPosition(window);
-		camera.getPosition(tmp_position);
-		mpos.x = int(tmp_position * 600);
+		if (camera)
+		{
+			camera->getPosition(tmp_position);
+			mpos.x = int(tmp_position * 600);
+		}
 
 		mpos.x = std::max(mpos.x, 0);
 		mpos.x = std::min(mpos.x, 599);
 
 		communicator.sendCursorPosition(CursorPosition(mpos.x, mpos.y));
 
-		// if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-		// {
-		// 	std::cout << "escape" << std::endl;
-		// 	// communicator.sendEndRequest();
-		// }
-		// if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-		// {
-		// 	std::cout << "space" << std::endl;
-		// 	// communicator.sendStartRequest();
-		// }
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+		{
+			std::cout << "escape" << std::endl;
+			communicator.sendEndRequest();
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+		{
+			std::cout << "space" << std::endl;
+			communicator.sendStartRequest();
+		}
 
  		int positionX, positionY;
 

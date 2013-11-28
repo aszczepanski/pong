@@ -17,6 +17,9 @@ int main(int argc, char* argv[])
 {
 	std::cout << "Hello pong!" << std::endl;
 
+//	Camera camera(sharedMemory);
+//	camera.configure();
+
 	std::string host = "127.0.0.1";
 	if (2 == argc)
 	{
@@ -29,11 +32,9 @@ int main(int argc, char* argv[])
 	SharedMemory sharedMemory;
 	Communicator communicator(sharedMemory, clientTCP, clientUDP);
 
-	Camera camera(sharedMemory);
-	//camera.configure();
-	//camera.run();
 
-	Drawer drawer(sharedMemory, communicator, camera);
+//	Drawer drawer(sharedMemory, communicator, &camera);
+	Drawer drawer(sharedMemory, communicator);
 
 	ClientApplication clientApplication(sharedMemory, drawer, clientUDP, communicator);
 	clientApplication.start();
