@@ -7,6 +7,7 @@
 namespace common
 {
 	class SharedMemory;
+	class Drawer;
 }
 
 namespace server
@@ -20,13 +21,14 @@ class ServerApplication
 {
 public:
 
-	ServerApplication(common::SharedMemory&, GameEngine&, ServerTCP&, ServerUDP&);
+	ServerApplication(common::SharedMemory&, common::Drawer&, GameEngine&, ServerTCP&, ServerUDP&);
 	void start();
 
 	~ServerApplication();
 
 private:
 	common::SharedMemory& sharedMemory;
+	common::Drawer& drawer;
 	GameEngine& gameEngine;
 
 	ServerTCP& serverTCP;

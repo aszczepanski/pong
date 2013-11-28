@@ -39,7 +39,6 @@ void* Communicator::start_routine()
 	bool quit = false;
 	while (!quit)
 	{
-//		getCurrentState();
 		usleep(25000); // 40 fps
 
 		sharedMemory.getEnded(quit);
@@ -60,10 +59,16 @@ void Communicator::sendCursorPosition(const CursorPosition& cursorPosition) cons
 	unsigned char buf[9];
 	buf[0] = BEGIN_MESSAGE;
 	
-//	clientUDP.send(&BEGIN_MESSAGE, 1);
-//	clientUDP.send(&REQUEST_CURSOR_POSITION, 1);
 	cursorPosition.send(buf, 1);
-	clientUDP.send(buf, 9);
+
+	try
+	{
+		clientUDP.send(buf, 9);
+	}
+	catch (...)
+	{
+		std::cout << "Communicator sendCursorPosition exception" << std::endl;
+	}
 
 	mutex.unlock();
 }
@@ -72,8 +77,14 @@ void Communicator::sendStartRequest() const
 {
 	mutex.lock();
 
-//	clientTCP.send(&BEGIN_MESSAGE, 1);
-	clientTCP.send(&REQUEST_START, 1);
+	try
+	{
+		clientTCP.send(&REQUEST_START, 1);
+	}
+	catch (...)
+	{
+		std::cout << "Communicator sendStartRequest exception" << std::endl;
+	}
 
 	mutex.unlock();
 }
@@ -82,8 +93,16 @@ void Communicator::sendEndRequest() const
 {
 	mutex.lock();
 
-//	clientTCP.send(&BEGIN_MESSAGE, 1);
-	clientTCP.send(&REQUEST_END, 1);
+	try
+	{
+		clientTCP.send(&REQUEST_END, 1);
+	}
+	catch (...)
+	{
+		std::cout << "Communicator sendEndRequest exception" << std::endl;
+	}
+
+	sharedMemory.setEnded(true);
 
 	mutex.unlock();
 }

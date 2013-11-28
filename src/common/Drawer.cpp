@@ -16,6 +16,11 @@ Drawer::Drawer(SharedMemory& sharedMemory, ICommunicator& communicator, Camera* 
 {
 }
 
+void Drawer::setCamera(Camera* camera)
+{
+	this->camera = camera;
+}
+
 void Drawer::run()
 {
 	std::cout << "Drawer thread" << std::endl;
@@ -106,8 +111,8 @@ void Drawer::run()
 
 		window.display();
 
- 		sharedMemory.getEnded(quit);
-
 		usleep(25000);
+
+ 		sharedMemory.getEnded(quit);
  	}
 }

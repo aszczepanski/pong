@@ -46,6 +46,7 @@ ClientTCP::ClientTCP(const string& hostname, const string& port)
 
 ClientTCP::~ClientTCP()
 {
+/*
 	if (connectionOpened)
 	{
 		std::cout << "client sockfd = " << sockfd << endl;
@@ -54,6 +55,7 @@ ClientTCP::~ClientTCP()
 			perror("client close sockfd");
 		}
 	}
+*/
 }
 
 void ClientTCP::closeSocket()

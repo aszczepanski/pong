@@ -69,8 +69,5 @@ void ConnectionTCP::endRequestHandler()
 	std::cout << "REQUEST_END received" << std::endl;
 
 	sharedMemory.setEnded(true);
-
-	serverSocket.send(&BEGIN_MESSAGE, 1);
-	serverSocket.send(&REQUEST_END, 1);
 }
 

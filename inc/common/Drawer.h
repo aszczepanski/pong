@@ -16,6 +16,7 @@ class Drawer
 public:
 	Drawer(common::SharedMemory&, ICommunicator&, Camera* = NULL);
 	void run();
+	void setCamera(Camera*);
 
 private:
 	common::SharedMemory& sharedMemory;

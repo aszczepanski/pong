@@ -13,15 +13,36 @@
 #include <cstddef>
 #include <unistd.h>
 #include <common/protocol.h>
+#include <boost/program_options.hpp>
+
+namespace po = boost::program_options;
 
 using namespace server;
 using namespace common;
 
-//#define SERVER_ONLY
+#define SERVER_ONLY
 
 int main(int argc, char* argv[])
 {
 	std::cout << "Hello pong!" << std::endl;
+
+	po::options_description optionsDescription("Allowed options");
+	optionsDescription.add_options()
+		("help", "produce help message")
+		("camera", "enables camera")
+	;
+
+	po::variables_map variablesMap;
+	po::store(po::parse_command_line(argc, argv, optionsDescription), variablesMap);
+	po::notify(variablesMap);    
+
+	if (variablesMap.count("help"))
+	{
+		std::cout << optionsDescription << std::endl;
+		return 1;
+	}
+
+
 
 	ServerTCP serverTCP(port.c_str());
 
@@ -34,15 +55,35 @@ int main(int argc, char* argv[])
 	SharedMemory sharedMemory;
 	GameEngine gameEngine(sharedMemory);
 
-	ServerApplication serverApplication(sharedMemory, gameEngine, acceptedServerTCP, serverUDP);
+	Camera* camera;
+
+	if (variablesMap.count("camera"))
+	{
+		std::cout << "Camera enabled" << std::endl;
+		camera = new Camera(sharedMemory);
+		camera->configure();
+	}
+	else
+	{
+		std::cout << "Camera disabled" << std::endl;
+		camera = NULL;
+	}
+
+	Communicator communicator(sharedMemory, acceptedServerTCP);
+
+	Drawer drawer(sharedMemory, communicator, camera);
+
+	ServerApplication serverApplication(sharedMemory, drawer, gameEngine, acceptedServerTCP, serverUDP);
 	serverApplication.start();
+
+	delete camera;
 
 	return 0;
 }
 
-ServerApplication::ServerApplication(SharedMemory& sharedMemory, GameEngine& gameEngine,
-	ServerTCP& serverTCP, ServerUDP& serverUDP)
-: sharedMemory(sharedMemory), gameEngine(gameEngine),
+ServerApplication::ServerApplication(SharedMemory& sharedMemory, Drawer& drawer,
+	GameEngine& gameEngine,	ServerTCP& serverTCP, ServerUDP& serverUDP)
+: sharedMemory(sharedMemory), drawer(drawer), gameEngine(gameEngine),
 	serverTCP(serverTCP), connectionTCP(serverTCP, sharedMemory, 1),
 	serverUDP(serverUDP), connectionUDP(serverUDP, sharedMemory, 1)
 {
@@ -56,15 +97,6 @@ void ServerApplication::start()
 	connectionTCP.run();
 	connectionUDP.run();
 #endif
-
-//	Camera camera(sharedMemory);
-//	camera.configure();
-
-
-	Communicator communicator(sharedMemory, serverTCP);
-
-//	Drawer drawer(sharedMemory, communicator, &camera);
-	Drawer drawer(sharedMemory, communicator);
 
 	gameEngine.run();
 

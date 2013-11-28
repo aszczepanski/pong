@@ -32,13 +32,13 @@ void* ReceiverTCP::start_routine()
 				endRequestHandler();
 				break;
 			default:
-				std::cout << "unsupported request received" << std::endl;
+				std::cout << "unsupported tcp request received" << std::endl;
 
 			}
 		}
 		catch (...)
 		{
-			std::cout << "request code exception" << std::endl;
+			std::cout << "tcp request code exception" << std::endl;
 		}
 		
 		sharedMemory.getEnded(quit);

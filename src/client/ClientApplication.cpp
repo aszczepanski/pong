@@ -9,6 +9,9 @@
 #include <iostream>
 #include <string>
 #include <common/protocol.h>
+#include <boost/program_options.hpp>
+
+namespace po = boost::program_options;
 
 using namespace client;
 using namespace common;
@@ -17,13 +20,28 @@ int main(int argc, char* argv[])
 {
 	std::cout << "Hello pong!" << std::endl;
 
-//	Camera camera(sharedMemory);
-//	camera.configure();
+	po::options_description optionsDescription("Allowed options");
+	optionsDescription.add_options()
+		("help", "produce help message")
+		("camera", "enables camera")
+		("host", po::value<std::string>(), "set host ip address")
+	;
+
+	po::variables_map variablesMap;
+	po::store(po::parse_command_line(argc, argv, optionsDescription), variablesMap);
+	po::notify(variablesMap);    
+
+	if (variablesMap.count("help"))
+	{
+		std::cout << optionsDescription << std::endl;
+		return 1;
+	}
 
 	std::string host = "127.0.0.1";
-	if (2 == argc)
+	if (variablesMap.count("host"))
 	{
-		host = argv[1];
+		std::cout << "Host ip address was set to " << variablesMap["host"].as<std::string>() << std::endl;
+		host = variablesMap["host"].as<std::string>();
 	}
 
 	ClientTCP clientTCP(host.c_str(), port.c_str());
@@ -32,12 +50,27 @@ int main(int argc, char* argv[])
 	SharedMemory sharedMemory;
 	Communicator communicator(sharedMemory, clientTCP, clientUDP);
 
+	Camera* camera;
 
-//	Drawer drawer(sharedMemory, communicator, &camera);
-	Drawer drawer(sharedMemory, communicator);
+	if (variablesMap.count("camera"))
+	{
+		std::cout << "Camera enabled" << std::endl;
+		camera = new Camera(sharedMemory);
+		camera->configure();
+	}
+	else
+	{
+		std::cout << "Camera disabled" << std::endl;
+		camera = NULL;
+	}
+
+
+	Drawer drawer(sharedMemory, communicator, camera);
 
 	ClientApplication clientApplication(sharedMemory, drawer, clientUDP, communicator);
 	clientApplication.start();
+
+	delete camera;
 
 	return 0;
 }
