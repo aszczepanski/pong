@@ -44,7 +44,7 @@ void Drawer::run()
 
 		communicator.sendCursorPosition(CursorPosition(mpos.x, mpos.y));
 
-
+#ifndef __APPLE__
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 		{
 			std::cout << "escape" << std::endl;
@@ -55,6 +55,7 @@ void Drawer::run()
 			std::cout << "space" << std::endl;
 			communicator.sendStartRequest();
 		}
+#endif
 
  		int positionX, positionY;
 
