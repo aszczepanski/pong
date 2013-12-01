@@ -55,19 +55,18 @@ void* GameEngine::start_routine()
 
 	b2BodyDef ballBodyDef;
 	ballBodyDef.type = b2_dynamicBody;
-	ballBodyDef.position.Set(1.6f, 1.7f);
+	ballBodyDef.position.Set(0.5f*(windowWidthf-circleRadiusf)/scaleFactor, 0.5f*(windowHeightf-circleRadiusf)/scaleFactor);
 	ballBodyDef.gravityScale = 0.0f;
 	b2Body* ballBody = world.CreateBody(&ballBodyDef);
 	b2CircleShape ballCircle;
-	//circle.m_p.Set(2.0f, 3.0f);
-	ballCircle.m_radius = 0.16f;
+	ballCircle.m_radius = circleRadiusf/scaleFactor;
 	b2FixtureDef ballFixtureDef;
 	ballFixtureDef.shape = &ballCircle;
 	ballFixtureDef.density = 1.0f;
 	ballFixtureDef.friction = 0.3f;
 	ballFixtureDef.restitution = 1.0f;
 	ballBody->CreateFixture(&ballFixtureDef);
-	b2Vec2 vvv(-4.6f, 8.7f);
+	b2Vec2 vvv(-2.8f, 3.5f);
 	ballBody->SetLinearVelocity(vvv);
 
 	b2BodyDef bottomPlayerBodyDef;
@@ -119,12 +118,17 @@ void* GameEngine::start_routine()
 		topPlayerBody->SetLinearVelocity(topPlayerLinearVelocity);
 
 		// update world
-		world.Step(timeStep, velocityIterations, positionIterations);
+		bool alreadyStarted;
+		sharedMemory.getStarted(alreadyStarted);
+		//if (alreadyStarted)
+		{
+			world.Step(timeStep, velocityIterations, positionIterations);
+		}
 
 		// change world rules
 		b2Vec2 vcx = ballBody->GetLinearVelocity();
 		//printf("%4.2f %4.2f\n", vcx.x, vcx.y);
-		const float thrV = 5.0f;
+		const float thrV = 4.0f;
 		if (vcx.y < thrV && vcx.y > -thrV)
 		{
 			if (vcx.y >= 0.0f)
