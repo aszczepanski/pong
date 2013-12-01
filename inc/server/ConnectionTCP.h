@@ -12,10 +12,17 @@ namespace common
 namespace server
 {
 
+/**
+ * Wątek odpowiedzialny za odbiór komunikatów TCP
+ */
 class ConnectionTCP
 	: public common::IThread
 {
 public:
+/**
+ * Konstruktor
+ * @param playerNumber Numer gracza z którym się komunikuje
+ */
 	ConnectionTCP(IServerSocket&, common::SharedMemory&, int playerNumber);
 
 private:

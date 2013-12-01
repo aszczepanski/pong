@@ -11,10 +11,16 @@ namespace common
 namespace server
 {
 
+/**
+ * Wątek realizujący silnik gry. Przeprowadza wszystkie niezbędne obliczenia. Wykorzystuje bibliotekę Box2D.
+ */
 class GameEngine
 	: public common::IThread
 {
 public:
+/**
+ * Konstruktor 
+ */
 	GameEngine(common::SharedMemory&);
 
 private:

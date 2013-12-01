@@ -12,10 +12,17 @@ namespace common
 namespace server
 {
 
+/**
+ * Wątek odpowiedzialny za odbiór komunikatów UDP
+ */
 class ConnectionUDP
 	: public common::IThread
 {
 public:
+/**
+ * Konstruktor
+ * @param playerNumber Numer gracza z którym się komunikuje
+ */
 	ConnectionUDP(IServerSocket&, common::SharedMemory&, int playerNumber);
 
 private:

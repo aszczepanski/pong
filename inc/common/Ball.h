@@ -7,12 +7,28 @@
 namespace common
 {
 
+/**
+ * Klasa przechowująca położenie piłki
+ */
 class Ball
 	: public Transferable
 {
 public:
+/**
+ * Konstruktor
+ */
 	Ball();
+/**
+ * Pobiera pozycję piłki
+ * @param x pozycja x
+ * @param y pozycja y
+ */
 	void getPosition(int& x, int& y) const;
+/**
+ * Ustawia pozycję piłki
+ * @param x pozycja x
+ * @param y pozycja y
+ */
 	void setPosition(int x, int y);
 
 	virtual void send(unsigned char*, int startPos) const;

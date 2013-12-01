@@ -11,16 +11,32 @@ struct hostent;
 namespace client
 {
 
+/**
+ * Klient UDP oparty na socketach
+ */
 class ClientUDP
 	: public IClientSocket
 {
 public:
+/**
+ * Konstruktor otwierający połączenie z serwerem
+ * @param hostname adres ip serwera
+ * @param port port na którym serwer nasłuchuje
+ */
 	ClientUDP(const char* hostname, const char* port);
+/**
+ * Destruktor zamyka połączenie z serwerem jeśli jest otwarte
+ */
 	~ClientUDP();
+
 	void send(const void*, size_t) const;
 	void receive(void*, size_t) const;
-	void closeConnection();
 	virtual void receiveNoBlock(void*, size_t) const;
+
+/**
+ * Zamyka połączenie z serwerem
+ */
+	void closeConnection();
 private:
 	const char* hostname;
 	const char* port;

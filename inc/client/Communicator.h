@@ -16,17 +16,23 @@ namespace client
 
 class IClientSocket;
 
+/**
+ * Odpowiada za wysyłanie danych do serwera
+ */
 class Communicator
 	: public common::ICommunicator, public common::IThread
 {
 
 public:
+/**
+ * Inicjalizuje komunikator
+ */
 	Communicator(common::SharedMemory&, IClientSocket& clientTCP, IClientSocket& clientUDP);
 
 	void sendCursorPosition(const common::CursorPosition&) const;
+
 	void sendStartRequest() const;
 	void sendEndRequest() const;
-//	void getCurrentState();
 
 private:
 	virtual void* start_routine();

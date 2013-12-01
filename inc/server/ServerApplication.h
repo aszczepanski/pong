@@ -17,13 +17,24 @@ class GameEngine;
 class ServerTCP;
 class ServerUDP;
 
+/**
+ * Klasa aplikacji serwera
+ */
 class ServerApplication
 {
 public:
-
+/**
+ * Konstruktor
+ */
 	ServerApplication(common::SharedMemory&, common::Drawer&, GameEngine&, ServerTCP&, ServerUDP&);
+/**
+ * Metoda rozpoczynająca działanie aplikacji
+ */
 	void start();
 
+/**
+ * Destruktor
+ */
 	~ServerApplication();
 
 private:

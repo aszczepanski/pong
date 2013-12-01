@@ -12,13 +12,19 @@ namespace common
 namespace client
 {
 
+/**
+ * Klasa odbierająca dane od serwera wykorzystująca klienta TCP
+ */
 class ReceiverTCP
 	: public common::IThread
 {
 
 public:
-
-	ReceiverTCP(common::SharedMemory&, common::ISocket&);
+/**
+ * Konstruktor
+ * @param isocket Referencja do klienta TCP
+ */
+	ReceiverTCP(common::SharedMemory&, common::ISocket& isocket);
 
 private:
 	

@@ -12,13 +12,20 @@ namespace common
 namespace client
 {
 
+/**
+ * Klasa odbierająca dane od serwera wykorzystująca klienta UDP
+ */
 class ReceiverUDP
 	: public common::IThread
 {
 
 public:
 
-	ReceiverUDP(common::SharedMemory&, common::ISocket&);
+/**
+ * Konstruktor
+ * @param isocket Referencja do klienta UDP
+ */
+	ReceiverUDP(common::SharedMemory&, common::ISocket& isocket);
 
 private:
 	
