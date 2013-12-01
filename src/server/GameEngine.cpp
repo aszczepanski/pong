@@ -1,6 +1,7 @@
 #include <server/GameEngine.h>
 #include <common/SharedMemory.h>
 #include <common/Player.h>
+#include <common/dimmensions.h>
 #include <common/Ball.h>
 #include <iostream>
 #include <cstddef>
@@ -22,32 +23,34 @@ void* GameEngine::start_routine()
 	b2Vec2 gravity(0.0f, -10.0f);
 	b2World world(gravity);
 
+	const float scaleFactor = 100.0f;
+
 	b2BodyDef groundBodyDef;
-	groundBodyDef.position.Set(3.0f, 0.0f);
+	groundBodyDef.position.Set(0.5f*windowWidthf/scaleFactor, 0.0f);
 	b2Body* groundBody = world.CreateBody(&groundBodyDef);
 	b2PolygonShape groundBox;
-	groundBox.SetAsBox(3.0f, 0.3f);
+	groundBox.SetAsBox(0.5f*windowWidthf/scaleFactor, borderSizef/scaleFactor);
 	groundBody->CreateFixture(&groundBox, 0.0f);
 
 	b2BodyDef ceilingBodyDef;
-	ceilingBodyDef.position.Set(3.0f, 6.0f);
+	ceilingBodyDef.position.Set(0.5f*windowWidthf/scaleFactor, windowHeightf/scaleFactor);
 	b2Body* ceilingBody = world.CreateBody(&ceilingBodyDef);
 	b2PolygonShape ceilingBox;
-	ceilingBox.SetAsBox(3.0f, 0.3f);
+	ceilingBox.SetAsBox(0.5f*windowWidthf/scaleFactor, borderSizef/scaleFactor);
 	ceilingBody->CreateFixture(&ceilingBox, 0.0f);
 
 	b2BodyDef leftBodyDef;
-	leftBodyDef.position.Set(0.0f, 3.0f);
+	leftBodyDef.position.Set(0.0f, 0.5f*windowHeightf/scaleFactor);
 	b2Body* leftBody = world.CreateBody(&leftBodyDef);
 	b2PolygonShape leftSideBox;
-	leftSideBox.SetAsBox(0.3f, 3.0f);
+	leftSideBox.SetAsBox(borderSizef/scaleFactor, 0.5f*windowHeight/scaleFactor);
 	leftBody->CreateFixture(&leftSideBox, 0.0f);
 
 	b2BodyDef rightBodyDef;
-	rightBodyDef.position.Set(6.0f, 3.0f);
+	rightBodyDef.position.Set(windowWidthf/scaleFactor, 0.5f*windowHeightf/scaleFactor);
 	b2Body* rightBody = world.CreateBody(&rightBodyDef);
 	b2PolygonShape rightSideBox;
-	rightSideBox.SetAsBox(0.3f, 3.0f);
+	rightSideBox.SetAsBox(borderSizef/scaleFactor, 0.5f*windowHeightf/scaleFactor);
 	rightBody->CreateFixture(&rightSideBox, 0.0f);
 
 	b2BodyDef ballBodyDef;
@@ -69,10 +72,10 @@ void* GameEngine::start_routine()
 
 	b2BodyDef bottomPlayerBodyDef;
 	bottomPlayerBodyDef.type = b2_kinematicBody;
-	bottomPlayerBodyDef.position.Set(3.0f, 5.1f);
+	bottomPlayerBodyDef.position.Set(0.5f*windowWidthf/scaleFactor, windowHeightf/scaleFactor - 0.9f);
 	b2Body* bottomPlayerBody = world.CreateBody(&bottomPlayerBodyDef);
 	b2PolygonShape bottomPlayerPolygon;
-	bottomPlayerPolygon.SetAsBox(0.4f, 0.07f);
+	bottomPlayerPolygon.SetAsBox(0.5f*platformWidthf/scaleFactor, 0.5f*platformHeightf/scaleFactor);
 	b2FixtureDef bottomPlayerFixtureDef;
 	bottomPlayerFixtureDef.shape = &bottomPlayerPolygon;
 	bottomPlayerFixtureDef.density = 1.0f;
@@ -81,10 +84,10 @@ void* GameEngine::start_routine()
 
 	b2BodyDef topPlayerBodyDef;
 	topPlayerBodyDef.type = b2_kinematicBody;
-	topPlayerBodyDef.position.Set(3.0f, 0.9f);
+	topPlayerBodyDef.position.Set(0.5f*windowWidthf/scaleFactor, 0.9f);
 	b2Body* topPlayerBody = world.CreateBody(&topPlayerBodyDef);
 	b2PolygonShape topPlayerPolygon;
-	topPlayerPolygon.SetAsBox(0.4f, 0.07f);
+	topPlayerPolygon.SetAsBox(0.5*platformWidthf/scaleFactor, 0.5f*platformHeight/scaleFactor);
 	b2FixtureDef topPlayerFixtureDef;
 	topPlayerFixtureDef.shape = &topPlayerPolygon;
 	topPlayerFixtureDef.density = 1.0f;
@@ -107,12 +110,12 @@ void* GameEngine::start_routine()
 		// set velocity
 		b2Vec2 bottomPlayerPosition = bottomPlayerBody->GetPosition();
 		sharedMemory.getPlayerCursorPosition(cursorPosition[0], 0);
-		b2Vec2 bottomPlayerLinearVelocity(30.0f*(cursorPosition[0].x / 100.0f - bottomPlayerPosition.x), 0.0f);
+		b2Vec2 bottomPlayerLinearVelocity(30.0f*(cursorPosition[0].x / scaleFactor - bottomPlayerPosition.x), 0.0f);
 		bottomPlayerBody->SetLinearVelocity(bottomPlayerLinearVelocity);
 
 		b2Vec2 topPlayerPosition = topPlayerBody->GetPosition();
 		sharedMemory.getPlayerCursorPosition(cursorPosition[1], 1);
-		b2Vec2 topPlayerLinearVelocity(30.0f*(cursorPosition[1].x / 100.0f - topPlayerPosition.x), 0.0f);
+		b2Vec2 topPlayerLinearVelocity(30.0f*(cursorPosition[1].x / scaleFactor - topPlayerPosition.x), 0.0f);
 		topPlayerBody->SetLinearVelocity(topPlayerLinearVelocity);
 
 		// update world
@@ -133,13 +136,13 @@ void* GameEngine::start_routine()
 
 		// set structures in shared memory
 		bottomPlayerPosition = bottomPlayerBody->GetPosition();
-		player[0].setPosition(bottomPlayerPosition.x * 100, bottomPlayerPosition.y * 100);
+		player[0].setPosition(bottomPlayerPosition.x * scaleFactor, bottomPlayerPosition.y * scaleFactor);
 
 		topPlayerPosition = topPlayerBody->GetPosition();
-		player[1].setPosition(topPlayerPosition.x * 100, topPlayerPosition.y * 100);
+		player[1].setPosition(topPlayerPosition.x * scaleFactor, topPlayerPosition.y * scaleFactor);
 
 		b2Vec2 ballPosition = ballBody->GetPosition();
-		ball.setPosition(ballPosition.x * 100, ballPosition.y * 100);
+		ball.setPosition(ballPosition.x * scaleFactor, ballPosition.y * scaleFactor);
 
 		//std::cout << ballPosition.x << " " << ballPosition.y << std::endl;
 
