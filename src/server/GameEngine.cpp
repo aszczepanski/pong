@@ -97,12 +97,13 @@ void* GameEngine::start_routine()
 	int32 velocityIterations = 6;
 	int32 positionIterations = 2;
 
-	// TODO
 	bool quit = false;
 
 	Ball ball;
 	Player player[2];
 	CursorPosition cursorPosition[2];
+
+	bool sandboxMode = true;
 
 	while (!quit)
 	{
@@ -125,6 +126,29 @@ void* GameEngine::start_routine()
 			world.Step(timeStep, velocityIterations, positionIterations);
 		}
 
+		if (!sandboxMode)
+		{
+			for (b2ContactEdge* ce = ballBody->GetContactList(); ce; ce = ce->next)
+			{
+				b2Contact* c = ce->contact;
+				if (c->GetFixtureA()->GetBody() == groundBody)
+				{
+					sharedMemory.addPoint(0);
+					b2Vec2 windowCenter(0.5f*(windowWidthf-circleRadiusf)/scaleFactor, 0.5f*(windowHeightf-circleRadiusf)/scaleFactor);
+					ballBody->SetTransform(windowCenter, 0.0f);
+					b2Vec2 vvv(-2.8f, 3.5f);
+					ballBody->SetLinearVelocity(vvv);
+				}
+				if (c->GetFixtureA()->GetBody() == ceilingBody)
+				{
+					sharedMemory.addPoint(1);
+					b2Vec2 windowCenter(0.5f*(windowWidthf-circleRadiusf)/scaleFactor, 0.5f*(windowHeightf-circleRadiusf)/scaleFactor);
+					ballBody->SetTransform(windowCenter, 0.0f);
+					b2Vec2 vvv(2.8f, -3.5f);
+					ballBody->SetLinearVelocity(vvv);
+				}
+			}
+		}
 		// change world rules
 		b2Vec2 vcx = ballBody->GetLinearVelocity();
 		//printf("%4.2f %4.2f\n", vcx.x, vcx.y);

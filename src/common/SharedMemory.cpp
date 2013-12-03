@@ -2,12 +2,29 @@
 #include <common/Ball.h>
 #include <common/Player.h>
 #include <cassert>
+#include <iostream>
 
 using namespace common;
 
 SharedMemory::SharedMemory()
 	: started(false), ended(false)
 {
+}
+
+void SharedMemory::addPoint(int nr)
+{
+	assert(nr == 0 || nr == 1);
+
+	mutex.lock();
+
+	int score;
+	player[nr].getScore(score);
+	score++;
+	player[nr].setScore(score);
+
+	mutex.unlock();
+
+	std::cout << "player " << nr << " score: " << score << std::endl;
 }
 
 void SharedMemory::setPlayerCameraPosition(const int& x, int nr)
@@ -67,11 +84,17 @@ void SharedMemory::getCurrentState(Ball& b, Player& p0, Player& p1) const
 
 void SharedMemory::setCurrentState(const Ball& b, const Player& p0, const Player& p1)
 {
+	int x,y;
+
 	mutex.lock();
 
 	ball = b;
-	player[0] = p0;
-	player[1] = p1;
+	p0.getPosition(x,y);
+	player[0].setPosition(x,y);
+	p1.getPosition(x,y);
+	player[1].setPosition(x,y);
+//	player[0] = p0;
+//	player[1] = p1;
 
 	mutex.unlock();
 }

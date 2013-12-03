@@ -3,7 +3,18 @@
 using namespace common;
 
 Player::Player()
+	: score(0)
 {
+}
+
+void Player::getScore(int& score) const
+{
+	score = this->score;
+}
+
+void Player::setScore(int score)
+{
+	this->score = score;
 }
 
 void Player::send(unsigned char* buf, int startPos) const

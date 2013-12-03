@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <common/dimmensions.h>
 #include <iostream>
+#include <cstdio>
 #include <unistd.h>
 
 using namespace common;
@@ -111,6 +112,38 @@ void GameBoardDrawer::drawBoard()
 	rightBorder.setPosition(windowWidth-borderSize, 0);
 	rightBorder.setFillColor(sf::Color::Blue);
 	window->draw(rightBorder);
+
+	static sf::Font font;
+	static bool fontLoaded = false;
+	if (!fontLoaded && font.loadFromFile("dreamorphans.ttf"))
+	{
+		std::cout << "font loaded" << std::endl;
+		fontLoaded = true;
+	}
+	
+	if (fontLoaded)
+	{
+		static int score = 0;
+		player[0].getScore(score);
+
+		char buffer[32];
+		sprintf(buffer, "score: %d", score);
+
+		static sf::Text text;
+		text.setFont(font);
+		text.setString(buffer);
+		text.setCharacterSize(24);
+		text.setColor(sf::Color::White);
+		text.setStyle(sf::Text::Bold);
+		text.setPosition(20,20);
+		window->draw(text);
+
+		player[1].getScore(score);
+		sprintf(buffer, "score: %d", score);
+		text.setString(buffer);
+		text.setPosition(20,windowHeight-54);
+		window->draw(text);
+	}
 
 	window->display();
 }

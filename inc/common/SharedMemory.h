@@ -70,6 +70,11 @@ public:
  * Ustawia aktualny stan gry
  */
 	void setCurrentState(const Ball&, const Player&, const Player&);
+/**
+ * Dodaje punkty graczowi
+ * @param nr numer gracza
+ */
+	void addPoint(int nr);
 
 /**
  * Zwraca informację czy gra wystartowała

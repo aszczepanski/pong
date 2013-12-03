@@ -173,10 +173,16 @@ void Main::doWork()
 			if(tld->currBB != NULL)
 			{
 				CvScalar rectangleColor = (confident) ? blue : yellow;
-				printf("%d %d\n", tld->currBB->tl().x, tld->currBB->tl().y);
+				printf("%d %d\n", tld->currBB->x, tld->currBB->y);
+				double cameraWidth = cvGetCaptureProperty(imAcq->capture, CV_CAP_PROP_FRAME_WIDTH);
+				const int border = 150;
+				double px = std::max(tld->currBB->x+tld->currBB->width/2, border);
+				px = std::min(px, cameraWidth-border);
+				px -= border;
+				px = windowWidth*(1.0-px/(cameraWidth-2*border));
 				communicator.sendCursorPosition(
 						common::CursorPosition(
-							tld->currBB->tl().x,
+							px,
 							0));
 				cvRectangle(img, tld->currBB->tl(), tld->currBB->br(), rectangleColor, 8, 8, 0);
 
@@ -281,6 +287,8 @@ void Main::doWork()
 					Rect r = Rect(box);
 
 					tld->selectObject(grey, &r);
+
+					communicator.sendStartRequest();
 				}
 			}
 
