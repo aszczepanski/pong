@@ -2,9 +2,10 @@
 #include <client/IClientSocket.h>
 #include <client/ClientTCP.h>
 #include <client/ClientUDP.h>
-#include <common/Drawer.h>
+#include <common/GameBoardDrawer.h>
 #include <common/SharedMemory.h>
-#include <common/Camera.h>
+#include <common/CameraEngine.h>
+#include <common/MouseEngine.h>
 #include <client/Communicator.h>
 #include <iostream>
 #include <string>
@@ -50,33 +51,39 @@ int main(int argc, char* argv[])
 	SharedMemory sharedMemory;
 	Communicator communicator(sharedMemory, clientTCP, clientUDP);
 
-	Camera* camera;
+	GameBoardDrawer drawer(sharedMemory);
+
+	IControllerEngine* controllerEngine;
+//	Camera* camera;
 
 	if (variablesMap.count("camera"))
 	{
 		std::cout << "Camera enabled" << std::endl;
-		camera = new Camera(sharedMemory);
-		camera->configure();
+//		camera = new Camera(sharedMemory);
+//		camera->configure();
+		controllerEngine = new CameraEngine(sharedMemory, communicator);
 	}
 	else
 	{
 		std::cout << "Camera disabled" << std::endl;
-		camera = NULL;
+//		camera = NULL;
+		controllerEngine = new MouseEngine(sharedMemory, communicator, drawer);
 	}
 
 
-	Drawer drawer(sharedMemory, communicator, camera);
+//	Drawer drawer(sharedMemory, communicator, camera);
+	drawer.init();
 
-	ClientApplication clientApplication(sharedMemory, drawer, clientUDP, communicator);
+	ClientApplication clientApplication(sharedMemory, drawer, controllerEngine, clientUDP, communicator);
 	clientApplication.start();
 
-	delete camera;
+//	delete camera;
 
 	return 0;
 }
 
-ClientApplication::ClientApplication(SharedMemory& sharedMemory, Drawer& drawer, IClientSocket& clientSocket, Communicator& communicator)
-	: sharedMemory(sharedMemory), drawer(drawer), clientSocket(clientSocket), communicator(communicator)
+ClientApplication::ClientApplication(SharedMemory& sharedMemory, GameBoardDrawer& drawer, IControllerEngine* controllerEngine, IClientSocket& clientSocket, Communicator& communicator)
+	: sharedMemory(sharedMemory), drawer(drawer), controllerEngine(controllerEngine), clientSocket(clientSocket), communicator(communicator)
 {
 }
 
@@ -87,6 +94,8 @@ void ClientApplication::start()
 
 	communicator.run();
 	drawer.run();
+
+	controllerEngine->run();
 
 	communicator.wait();
 

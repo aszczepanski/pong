@@ -14,7 +14,7 @@ class CameraEngine
 {
 
 public:
-	CameraEngine(SharedMemory&, ICommunicator);
+	CameraEngine(SharedMemory&, ICommunicator&);
 
 	virtual void run();
 

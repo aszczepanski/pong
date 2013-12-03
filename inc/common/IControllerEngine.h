@@ -15,6 +15,8 @@ public:
 
 	virtual void run() = 0;
 
+	virtual ~IControllerEngine() { }
+
 protected:
 	SharedMemory& sharedMemory;
 	ICommunicator& communicator;

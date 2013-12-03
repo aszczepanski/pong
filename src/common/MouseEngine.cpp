@@ -5,12 +5,13 @@
 #include <common/ICommunicator.h>
 #include <iostream>
 #include <unistd.h>
+#include <common/dimmensions.h>
 
 using namespace common;
 using namespace std;
 
-MouseEngine::MouseEngine(SharedMemory& sharedMemory, ICommunicator& communicator)
-	: IControllerEngine(sharedMemory, communicator)
+MouseEngine::MouseEngine(SharedMemory& sharedMemory, ICommunicator& communicator, GameBoardDrawer& drawer)
+	: IControllerEngine(sharedMemory, communicator), drawer(drawer)
 {
 }
 
@@ -20,31 +21,38 @@ void MouseEngine::run()
 
 	bool quit = false;
 
-	GameBoardDrawer gameBoardDrawer(sharedMemory);
-
-	gameBoardDrawer.init();
-
 	while (!quit)
 	{
-		int mousePositionX, mousePositionY;
-		gameBoardDrawer.getMousePosition(mousePositionX, mousePositionY);
-
-		communicator.sendCursorPosition(CursorPosition(mousePositionX, mousePositionY));
-
-#ifndef __APPLE__
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+		
+		sf::Event event;
+		while (drawer.getWindow()->pollEvent(event))
 		{
-			std::cout << "escape" << std::endl;
-			communicator.sendEndRequest();
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-		{
-			std::cout << "space" << std::endl;
-			communicator.sendStartRequest();
-		}
-#endif
+			// "close requested" event: we close the window
+			if (event.type == sf::Event::Closed)
+			{
+				//window.close();
+				cout << "escape" << endl;
+				communicator.sendEndRequest();
 
-		gameBoardDrawer.drawBoard();
+			}
+			if (event.type == sf::Event::MouseMoved)
+			{
+				communicator.sendCursorPosition(CursorPosition(event.mouseMove.x, event.mouseMove.y));
+			}
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == sf::Keyboard::Escape)
+				{
+					cout << "escape" << endl;
+					communicator.sendEndRequest();
+				}
+				if (event.key.code == sf::Keyboard::Space)
+				{
+					cout << "space" << endl;
+					communicator.sendStartRequest();
+				}
+			}
+		}
 
 		usleep(25000);
 

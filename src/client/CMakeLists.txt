@@ -1,12 +1,9 @@
-cmake_minimum_required(VERSION 2.8)
-
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
 set(LIBS common)
-set(LIBS ${LIBS} pthread
-	opencv_core opencv_highgui opencv_video opencv_imgproc
-	sfml-system sfml-graphics sfml-window
-	boost_program_options)
+set(LIBS ${LIBS}
+	pthread
+	boost_program_options
+	libopentld cvblobs config++ ${Opencv_LIBS})
 
 set(CLIENT_SRCS
 	ClientApplication.cpp
@@ -18,9 +15,11 @@ set(CLIENT_SRCS
 	ReceiverUDP.cpp
 )
 
-link_directories(${PROJECT_SOURCE_DIR}/lib)
+include_directories(
+	${CMAKE_SOURCE_DIR}/inc
+)
 
-set(CMAKE_CXX_FLAGS "-g -Wall -std=c++11")
+link_directories(${PROJECT_SOURCE_DIR}/lib)
 
 add_executable(client-application ${CLIENT_SRCS})
 target_link_libraries(client-application ${LIBS})

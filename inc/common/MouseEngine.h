@@ -8,16 +8,19 @@ namespace common
 
 class SharedMemory;
 class ICommunicator;
+class GameBoardDrawer;
 
 class MouseEngine
 	: public IControllerEngine
 {
 
 public:
-	MouseEngine(SharedMemory&, ICommunicator&);
+	MouseEngine(SharedMemory&, ICommunicator&, GameBoardDrawer&);
 
 	virtual void run();
 
+private:
+	GameBoardDrawer& drawer;
 
 };
 

@@ -7,13 +7,17 @@
 #include <server/GameEngine.h>
 #include <server/Communicator.h>
 #include <common/SharedMemory.h>
-#include <common/Drawer.h>
+#include <common/GameBoardDrawer.h>
+#include <common/IControllerEngine.h>
+#include <common/MouseEngine.h>
+#include <common/CameraEngine.h>
 #include <common/Camera.h>
 #include <iostream>
 #include <cstddef>
 #include <unistd.h>
 #include <common/protocol.h>
 #include <boost/program_options.hpp>
+#include <cstdlib>
 
 namespace po = boost::program_options;
 
@@ -24,6 +28,7 @@ using namespace common;
 
 int main(int argc, char* argv[])
 {
+	
 	std::cout << "Hello pong!" << std::endl;
 
 	po::options_description optionsDescription("Allowed options");
@@ -52,42 +57,56 @@ int main(int argc, char* argv[])
 	ServerTCP acceptedServerTCP = serverTCP;
 #endif
 	ServerUDP serverUDP(port.c_str());
+
 	SharedMemory sharedMemory;
 	GameEngine gameEngine(sharedMemory);
 
-	Camera* camera;
+	Communicator communicator(sharedMemory, acceptedServerTCP);
+	GameBoardDrawer drawer(sharedMemory);
+
+	IControllerEngine* controllerEngine;
+//	Camera* camera;
 
 	if (variablesMap.count("camera"))
 	{
 		std::cout << "Camera enabled" << std::endl;
-		camera = new Camera(sharedMemory);
-		camera->configure();
+//		camera = new Camera(sharedMemory);
+//		camera->configure();
+		controllerEngine = new CameraEngine(sharedMemory, communicator);
 	}
 	else
 	{
 		std::cout << "Camera disabled" << std::endl;
-		camera = NULL;
+		//camera = NULL;
+
+		controllerEngine = new MouseEngine(sharedMemory, communicator, drawer);
 	}
 
-	Communicator communicator(sharedMemory, acceptedServerTCP);
 
-	Drawer drawer(sharedMemory, communicator, camera);
+	drawer.init();
 
-	ServerApplication serverApplication(sharedMemory, drawer, gameEngine, acceptedServerTCP, serverUDP);
+	ServerApplication serverApplication(sharedMemory, drawer, controllerEngine, gameEngine, acceptedServerTCP, serverUDP);
 	serverApplication.start();
 
-	delete camera;
+//	delete camera;
+//	camera = NULL;
+
+	delete controllerEngine;
+	controllerEngine = NULL;
 
 	return 0;
 }
 
-ServerApplication::ServerApplication(SharedMemory& sharedMemory, Drawer& drawer,
-	GameEngine& gameEngine,	ServerTCP& serverTCP, ServerUDP& serverUDP)
-: sharedMemory(sharedMemory), drawer(drawer), gameEngine(gameEngine),
+ServerApplication::ServerApplication(SharedMemory& sharedMemory, GameBoardDrawer& drawer,
+	IControllerEngine* controllerEngine, GameEngine& gameEngine,
+	ServerTCP& serverTCP, ServerUDP& serverUDP)
+: sharedMemory(sharedMemory), drawer(drawer), controllerEngine(controllerEngine),
+	gameEngine(gameEngine),
 	serverTCP(serverTCP), connectionTCP(serverTCP, sharedMemory, 1),
 	serverUDP(serverUDP), connectionUDP(serverUDP, sharedMemory, 1)
 {
 }
+
 
 void ServerApplication::start()
 {
@@ -101,6 +120,8 @@ void ServerApplication::start()
 	gameEngine.run();
 
 	drawer.run();
+
+	controllerEngine->run();
 
 	gameEngine.wait();
 
@@ -117,3 +138,4 @@ void ServerApplication::start()
 ServerApplication::~ServerApplication()
 {
 }
+

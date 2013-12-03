@@ -25,15 +25,20 @@ public:
  */
 	ConnectionUDP(IServerSocket&, common::SharedMemory&, int playerNumber);
 
+	void sendCurrentState();
+
 private:
 	virtual void* start_routine();
 
 	void cursorPositionRequestHandler(unsigned char* buf);
 
+
 	IServerSocket& serverSocket;
 	common::SharedMemory& sharedMemory;
 
 	const int playerNumber;
+
+	bool knownReceiver;
 };
 
 }

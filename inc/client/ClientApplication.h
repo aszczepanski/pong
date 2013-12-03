@@ -4,7 +4,8 @@
 namespace common
 {
 	class SharedMemory;
-	class Drawer;
+	class GameBoardDrawer;
+	class IControllerEngine;
 }
 
 namespace client
@@ -22,7 +23,7 @@ public:
 /**
  * Konstruktor referencje do zainicjowanych obiektów z których będzie korzystać ClientApplication
  */
-	ClientApplication(common::SharedMemory&, common::Drawer&, IClientSocket&, Communicator&);
+	ClientApplication(common::SharedMemory&, common::GameBoardDrawer&, common::IControllerEngine*, IClientSocket&, Communicator&);
 /**
  * Motoda uruchamiająca aplikację.
  */
@@ -30,7 +31,8 @@ public:
 
 private:
 	common::SharedMemory& sharedMemory;
-	common::Drawer& drawer;
+	common::GameBoardDrawer& drawer;
+	common::IControllerEngine* controllerEngine;
 	IClientSocket& clientSocket;
 	Communicator& communicator;
 };

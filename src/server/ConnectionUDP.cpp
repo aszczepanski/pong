@@ -15,7 +15,7 @@ using namespace server;
 using namespace common;
 
 ConnectionUDP::ConnectionUDP(IServerSocket& serverSocket, SharedMemory& sharedMemory, int playerNumber)
-	: serverSocket(serverSocket), sharedMemory(sharedMemory), playerNumber(playerNumber)
+	: serverSocket(serverSocket), sharedMemory(sharedMemory), playerNumber(playerNumber), knownReceiver(false)
 {
 	assert(playerNumber == 0 || playerNumber == 1);
 }
@@ -34,6 +34,7 @@ void* ConnectionUDP::start_routine()
 		catch(...)
 		{
 			sharedMemory.getEnded(quit);
+			sendCurrentState();
 			continue;
 		}
 		if (request[0] != BEGIN_MESSAGE)
@@ -60,6 +61,8 @@ void ConnectionUDP::cursorPositionRequestHandler(unsigned char* request)
 
 		sharedMemory.setPlayerCursorPosition(cursorPosition, playerNumber);
 
+		knownReceiver = true; // TODO mutex here
+
 		Ball ball;
 		Player player[2];
 		unsigned char buf[33];
@@ -78,3 +81,20 @@ void ConnectionUDP::cursorPositionRequestHandler(unsigned char* request)
 	}
 }
 
+void ConnectionUDP::sendCurrentState()
+{
+	if (knownReceiver)
+	{
+		Ball ball;
+		Player player[2];
+		unsigned char buf[33];
+
+		sharedMemory.getCurrentState(ball, player[0], player[1]);
+
+		buf[0] = BEGIN_MESSAGE;
+		ball.send(buf, 1);
+		player[0].send(buf, 9);
+		player[1].send(buf, 21);
+		serverSocket.send(buf, 33);
+	}
+}

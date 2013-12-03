@@ -7,7 +7,8 @@
 namespace common
 {
 	class SharedMemory;
-	class Drawer;
+	class GameBoardDrawer;
+	class IControllerEngine;
 }
 
 namespace server
@@ -26,7 +27,7 @@ public:
 /**
  * Konstruktor
  */
-	ServerApplication(common::SharedMemory&, common::Drawer&, GameEngine&, ServerTCP&, ServerUDP&);
+	ServerApplication(common::SharedMemory&, common::GameBoardDrawer&, common::IControllerEngine*, GameEngine&, ServerTCP&, ServerUDP&);
 /**
  * Metoda rozpoczynająca działanie aplikacji
  */
@@ -39,7 +40,8 @@ public:
 
 private:
 	common::SharedMemory& sharedMemory;
-	common::Drawer& drawer;
+	common::GameBoardDrawer& drawer;
+	common::IControllerEngine* controllerEngine;
 	GameEngine& gameEngine;
 
 	ServerTCP& serverTCP;

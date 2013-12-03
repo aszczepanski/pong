@@ -1,8 +1,8 @@
 #ifndef DIMMENSIONS_H
 #define DIMMENSIONS_H
 
-const int windowWidth = 800;
-const int windowHeight = 600;
+const int windowWidth = 600;
+const int windowHeight = 700;
 const int circleRadius = 16;
 const int platformWidth = 80;
 const int platformHeight = 14;

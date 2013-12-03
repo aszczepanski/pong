@@ -78,7 +78,7 @@ void ServerUDP::receiveNoBlock(void* buf, size_t size) const
 	memcpy(&readfds,&masterfds,sizeof(fd_set));
 	timeval timeout;
 	timeout.tv_sec = 0;
-	timeout.tv_usec = 100000;
+	timeout.tv_usec = 40000;
 	if (select(sock+1, &readfds, NULL, NULL, &timeout) < 0)
 	{
 		printf("select error");

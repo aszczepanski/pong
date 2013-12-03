@@ -120,7 +120,7 @@ void* GameEngine::start_routine()
 		// update world
 		bool alreadyStarted;
 		sharedMemory.getStarted(alreadyStarted);
-		//if (alreadyStarted)
+		if (alreadyStarted)
 		{
 			world.Step(timeStep, velocityIterations, positionIterations);
 		}
@@ -128,13 +128,31 @@ void* GameEngine::start_routine()
 		// change world rules
 		b2Vec2 vcx = ballBody->GetLinearVelocity();
 		//printf("%4.2f %4.2f\n", vcx.x, vcx.y);
-		const float thrV = 4.0f;
-		if (vcx.y < thrV && vcx.y > -thrV)
+		const float minThrV = 4.0f;
+		if (vcx.y < minThrV && vcx.y > -minThrV)
 		{
 			if (vcx.y >= 0.0f)
-				vcx.y = thrV;
+				vcx.y = minThrV;
 			else
-				vcx.y = -thrV;
+				vcx.y = -minThrV;
+			ballBody->SetLinearVelocity(vcx);
+		}
+		const float maxThrV = 10.0f;
+		if (vcx.x > maxThrV || vcx.x < -maxThrV)
+		{
+			if (vcx.x >= 0.0f)
+				vcx.x = maxThrV;
+			else
+				vcx.x = -maxThrV;
+			ballBody->SetLinearVelocity(vcx);
+		}
+
+		if (vcx.y > maxThrV || vcx.y < -maxThrV)
+		{
+			if (vcx.y >= 0.0f)
+				vcx.y = maxThrV;
+			else
+				vcx.y = -maxThrV;
 			ballBody->SetLinearVelocity(vcx);
 		}
 
