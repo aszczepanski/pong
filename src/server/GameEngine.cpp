@@ -7,6 +7,8 @@
 #include <cstddef>
 #include <Box2D/Box2D.h>
 #include <unistd.h>
+#include <cstdlib>
+#include <ctime>
 
 using namespace server;
 using namespace common;
@@ -55,7 +57,7 @@ void* GameEngine::start_routine()
 
 	b2BodyDef ballBodyDef;
 	ballBodyDef.type = b2_dynamicBody;
-	ballBodyDef.position.Set(0.5f*(windowWidthf-circleRadiusf)/scaleFactor, 0.5f*(windowHeightf-circleRadiusf)/scaleFactor);
+	ballBodyDef.position.Set(0.5f*(windowWidthf-circleRadiusf)/scaleFactor, 2.0/*0.5f*(windowHeightf-circleRadiusf)/scaleFactor*/);
 	ballBodyDef.gravityScale = 0.0f;
 	b2Body* ballBody = world.CreateBody(&ballBodyDef);
 	b2CircleShape ballCircle;
@@ -66,7 +68,10 @@ void* GameEngine::start_routine()
 	ballFixtureDef.friction = 0.3f;
 	ballFixtureDef.restitution = 1.0f;
 	ballBody->CreateFixture(&ballFixtureDef);
-	b2Vec2 vvv(-2.8f, 3.5f);
+	srand(time(0));
+	double vx = (double)rand()/(double)RAND_MAX * 2.0 - 1.0;
+	std::cout << vx << std::endl;
+	b2Vec2 vvv(vx, 3.5f);
 	ballBody->SetLinearVelocity(vvv);
 
 	b2BodyDef bottomPlayerBodyDef;
@@ -103,7 +108,7 @@ void* GameEngine::start_routine()
 	Player player[2];
 	CursorPosition cursorPosition[2];
 
-	bool sandboxMode = true;
+	bool sandboxMode = false;
 
 	while (!quit)
 	{
@@ -133,18 +138,20 @@ void* GameEngine::start_routine()
 				b2Contact* c = ce->contact;
 				if (c->GetFixtureA()->GetBody() == groundBody)
 				{
-					sharedMemory.addPoint(0);
-					b2Vec2 windowCenter(0.5f*(windowWidthf-circleRadiusf)/scaleFactor, 0.5f*(windowHeightf-circleRadiusf)/scaleFactor);
+					sharedMemory.addPoint(1);
+					b2Vec2 windowCenter(0.5f*(windowWidthf-circleRadiusf)/scaleFactor, 2.0f/*0.5f*(windowHeightf-circleRadiusf)/scaleFactor*/);
 					ballBody->SetTransform(windowCenter, 0.0f);
-					b2Vec2 vvv(-2.8f, 3.5f);
+					double vx = (double)rand()/(double)RAND_MAX * 2.0 - 1.0;
+					b2Vec2 vvv(vx, 3.5f);
 					ballBody->SetLinearVelocity(vvv);
 				}
 				if (c->GetFixtureA()->GetBody() == ceilingBody)
 				{
-					sharedMemory.addPoint(1);
-					b2Vec2 windowCenter(0.5f*(windowWidthf-circleRadiusf)/scaleFactor, 0.5f*(windowHeightf-circleRadiusf)/scaleFactor);
+					sharedMemory.addPoint(0);
+					b2Vec2 windowCenter(0.5f*(windowWidthf-circleRadiusf)/scaleFactor, windowHeightf/scaleFactor-2.0f/*0.5f*(windowHeightf-circleRadiusf)/scaleFactor*/);
 					ballBody->SetTransform(windowCenter, 0.0f);
-					b2Vec2 vvv(2.8f, -3.5f);
+					double vx = (double)rand()/(double)RAND_MAX * 2.0 - 1.0;
+					b2Vec2 vvv(vx, -3.5f);
 					ballBody->SetLinearVelocity(vvv);
 				}
 			}
@@ -152,7 +159,7 @@ void* GameEngine::start_routine()
 		// change world rules
 		b2Vec2 vcx = ballBody->GetLinearVelocity();
 		//printf("%4.2f %4.2f\n", vcx.x, vcx.y);
-		const float minThrV = 4.0f;
+		const float minThrV = 3.5f;
 		if (vcx.y < minThrV && vcx.y > -minThrV)
 		{
 			if (vcx.y >= 0.0f)
