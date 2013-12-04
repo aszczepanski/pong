@@ -226,10 +226,15 @@ void Main::doWork()
 				gui->showImage(img);
 				char key = gui->getKey();
 
-				if(key == 'q')
+				if(key == 'q' || key == 27) // 27 means escape
 				{
 					communicator.sendEndRequest();
 					break;
+				}
+
+				if(key == ' ')
+				{
+					communicator.sendStartRequest();
 				}
 
 				if(key == 'b')
@@ -287,8 +292,6 @@ void Main::doWork()
 					Rect r = Rect(box);
 
 					tld->selectObject(grey, &r);
-
-					communicator.sendStartRequest();
 				}
 			}
 
