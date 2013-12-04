@@ -6,6 +6,7 @@ include_directories(
 	../../3rdparty/libopentld/mftracker
 	../../3rdparty/libopentld/tld      
 	../../3rdparty/cvblobs    
+	../../3rdparty/libconfig
 	../../inc
 	${OpenCV_INCLUDE_DIRS})
 

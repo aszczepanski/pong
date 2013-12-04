@@ -19,6 +19,8 @@
 #include <boost/program_options.hpp>
 #include <cstdlib>
 
+#include <X11/Xlib.h>
+
 namespace po = boost::program_options;
 
 using namespace server;
@@ -47,6 +49,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	XInitThreads();
 
 
 	ServerTCP serverTCP(port.c_str());

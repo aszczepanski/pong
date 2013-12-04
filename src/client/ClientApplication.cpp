@@ -12,6 +12,8 @@
 #include <common/protocol.h>
 #include <boost/program_options.hpp>
 
+#include <X11/Xlib.h>
+
 namespace po = boost::program_options;
 
 using namespace client;
@@ -37,6 +39,8 @@ int main(int argc, char* argv[])
 		std::cout << optionsDescription << std::endl;
 		return 1;
 	}
+
+	XInitThreads();
 
 	std::string host = "127.0.0.1";
 	if (variablesMap.count("host"))

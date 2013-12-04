@@ -3,6 +3,7 @@ set(LIBS common)
 set(LIBS ${LIBS}
 	pthread
 	boost_program_options
+	X11
 	libopentld cvblobs config++ ${Opencv_LIBS})
 
 set(CLIENT_SRCS

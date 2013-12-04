@@ -4,6 +4,7 @@ set(LIBS ${LIBS}
 	pthread
 	Box2D
 	boost_program_options
+	X11
 	libopentld cvblobs config++ ${OpenCV_LIBS})
 
 set(SERVER_SRCS
