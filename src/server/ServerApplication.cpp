@@ -19,7 +19,9 @@
 #include <boost/program_options.hpp>
 #include <cstdlib>
 
+#ifndef __APPLE__
 #include <X11/Xlib.h>
+#endif
 
 namespace po = boost::program_options;
 
@@ -49,8 +51,9 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+#ifndef __APPLE__
 	XInitThreads();
-
+#endif
 
 	ServerTCP serverTCP(port.c_str());
 

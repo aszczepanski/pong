@@ -12,7 +12,9 @@
 #include <common/protocol.h>
 #include <boost/program_options.hpp>
 
+#ifndef __APPLE__
 #include <X11/Xlib.h>
+#endif
 
 namespace po = boost::program_options;
 
@@ -40,7 +42,9 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+#ifndef __APPLE__
 	XInitThreads();
+#endif
 
 	std::string host = "127.0.0.1";
 	if (variablesMap.count("host"))
