@@ -164,7 +164,7 @@ void Main::doWork()
 				strcpy(learningString, "Learning");
 			}
 
-			sprintf(string, "#%d,Posterior %.2f; fps: %.2f, #numwindows:%d, %s", imAcq->currentFrame - 1, tld->currConf, fps, tld->detectorCascade->numWindows, learningString);
+			//sprintf(string, "#%d,Posterior %.2f; fps: %.2f, #numwindows:%d, %s", imAcq->currentFrame - 1, tld->currConf, fps, tld->detectorCascade->numWindows, learningString);
 			CvScalar yellow = CV_RGB(255, 255, 0);
 			CvScalar blue = CV_RGB(0, 0, 255);
 			CvScalar black = CV_RGB(0, 0, 0);
@@ -173,7 +173,7 @@ void Main::doWork()
 			if(tld->currBB != NULL)
 			{
 				CvScalar rectangleColor = (confident) ? blue : yellow;
-				printf("%d %d\n", tld->currBB->x, tld->currBB->y);
+				//printf("%d %d\n", tld->currBB->x, tld->currBB->y);
 				double cameraWidth = cvGetCaptureProperty(imAcq->capture, CV_CAP_PROP_FRAME_WIDTH);
 				const int border = 150;
 				double px = std::max(tld->currBB->x+tld->currBB->width/2, border);
@@ -206,8 +206,8 @@ void Main::doWork()
 
 			CvFont font;
 			cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, .5, .5, 0, 1, 8);
-			cvRectangle(img, cvPoint(0, 0), cvPoint(img->width, 50), black, CV_FILLED, 8, 0);
-			cvPutText(img, string, cvPoint(25, 25), &font, white);
+//			cvRectangle(img, cvPoint(0, 0), cvPoint(img->width, 50), black, CV_FILLED, 8, 0);
+//			cvPutText(img, string, cvPoint(25, 25), &font, white);
 
 			if(showForeground)
 			{
@@ -236,7 +236,7 @@ void Main::doWork()
 				{
 					communicator.sendStartRequest();
 				}
-
+/*
 				if(key == 'b')
 				{
 
@@ -280,7 +280,7 @@ void Main::doWork()
 					tld->readFromFile(modelPath);
 				}
 
-				if(key == 'r')
+*/				if(key == 'r')
 				{
 					CvRect box;
 

@@ -113,8 +113,8 @@ int getBBFromUser(IplImage *img, CvRect &rect, Gui *gui)
     cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, 0.5, 0.5, 0, 1, 8);
 
     cvSetMouseCallback(window_name.c_str(), mouseHandler, NULL);
-    cvPutText(img0, "Draw a bounding box and press Enter", cvPoint(0, 60),
-              &font, cvScalar(255, 255, 0));
+//    cvPutText(img0, "Draw a bounding box and press Enter", cvPoint(0, 60),
+//              &font, cvScalar(255, 255, 0));
     cvShowImage(window_name.c_str(), img0);
 
     while(!correctBB)
