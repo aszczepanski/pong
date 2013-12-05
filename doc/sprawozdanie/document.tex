@@ -74,8 +74,9 @@ Jeśli wybierze się opcję sterowania z użyciem kamery pojawia się dodatkowe 
 Okno umożliwia konfigurację programu. Aby możliwe było sterowanie platformą konieczne jest zaznaczenie przedmiotu który ma być śledzony.
 
 \begin{tightlist}
-\item \keystroke{r} wyczyść obecne zaznaczenie i rozpocznij zbieranie nowego zaznaczenia
-\item \keystroke{q} wyjdź
+\item \keystroke{r} -- wyczyść obecne zaznaczenie i rozpocznij zbieranie nowego zaznaczenia
+\item \keystroke{space} -- rozpocznij grę
+\item \keystroke{q} lub \keystroke{escape} -- wyjdź
 \end{tightlist}
 
 \subsection{Sterowanie przy pomocy myszki}
@@ -83,10 +84,56 @@ Okno umożliwia konfigurację programu. Aby możliwe było sterowanie platformą
 W przypadku sterowania z użyciem myszki platformą steruje się poprzez ruch myszki nad oknem z grą.
 
 \begin{tightlist}
-\item \keystroke{mouse} poruszanie platformą
-\item \keystroke{spacja} rozpocznij grę
-\item \keystroke{escape} wyjdź
+\item \keystroke{mouse} -- poruszanie platformą
+\item \keystroke{space} -- rozpocznij grę
+\item \keystroke{escape} -- wyjdź
 \end{tightlist}
+
+\section{Podjęte próby rozwiazania}
+
+Cały projekt możemy z pewnością potraktować jako duży poligon doświadczalny w zakresie przetwarzania obrazu. Zanim zastosowaliśmy algorytm TLD próbowaliśmy dwóch innych sposobów:
+
+\begin{tightlist}
+\item autorskie rozwiązanie w oparciu o próbkowanie koloru
+\item rozwiązanie oparte na algorytmie CAMShift
+\end{tightlist}
+
+\subsection{Autorskie rozwiązanie}
+
+Autorskie rozwiązanie składało się z 2 kroków konfiguracji:
+
+\begin{tightlist}
+\item zaznaczenie obszaru który chcemy śledzić
+\item dobór odpowiednich wartości HSV
+\end{tightlist}
+
+Po zaznaczeniu obszaru nasz algorytm obliczał średnie wartości HSV dla zaznaczonego obszaru. Następnie wyświetlał użytkownikowi otrzymane wartości w celu ręcznego ich dopasowania (na bazie otrzymanych wartości tworzył przedziały). Algorytm dobrze radził sobie z charakterystycznymi kolorami (np. zielonym markerem). Napotkaliśmy jednak trzy problemy:
+
+\begin{tightlist}
+\item po początkowej kalibracji zmiany oświetlenia uniemożliwiały płynną grę
+\item w przypadku zgubienia ręki występowały trudności z jej ponownym odnalezieniem
+\item mylenie dłoni z głową
+\end{tightlist}
+
+Ponieważ charakter naszej aplikacji wymagał braku skokowości (nie mogliśmy sobie pozwolić na choćby chwilowe zgubienie pozycji dłoni) powyższy algorytm nie sprawdził się w przypadku sterowania ciałem. Sprawdziłby się w przypadku użycia odpowiedniego markera.
+
+\subsection{Camshift}
+
+Kolejną próbą był algorytm CAMShift. Algorytm zachowywał się znacznie lepiej jeśli chodzi o ciągłość pomiarów (rzadko zdarzały się sytuacje w których program gubił dłoń). Odbywało się to jednak tylko w przypadku spełnienia odpowiednich założeń:
+
+\begin{tightlist}
+\item{ tylko ręka jest przed ekranem (brak głowy) }
+\item{ w miarę odizolowane tło}
+\end{tightlist}
+
+Niestety również ten algorytm nie nadał się jako finalne rozwiązanie. Uznaliśmy, że przyjemność czerpana z gry jest zbyt niska. Wynikało to głównie z faktów że:
+
+\begin{tightlist}
+\item{algorytm miał spore problemy z wykryciem ponownie dłoni gdy ta opuściła ekran}
+\item{płynna gra wymagała zbyt dużych naszym zdaniem założeń (czyste tło, brak głowy w kamerze)}
+\end{tightlist}
+
+Z powodu wysoko postawionych założeń jeśli chodzi o przyjemność grania odrzuciliśmy również to rozwiązanie.
 
 \section{Opis algorytmu TLD} \label{TLD}
 
@@ -108,11 +155,11 @@ Powyższe rozwiązanie łączy stosunkowo krótki czas wykonania z dobrą efekty
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.5\textwidth]{alg_flow.png}
-\caption{Przepływ działania algorytmu. Pochodzi z~\cite{TDL-thesis}.}
+\caption{Przepływ działania algorytmu. Pochodzi z~\cite{TLD-thesis}.}
 \label{fig:flow}
 \end{figure}
 
-Algorytm został szczegółowo opisany w~\cite{TDL-thesis}.
+Algorytm został szczegółowo opisany w~\cite{TLD-thesis}.
 
 \section{Wyniki} \label{results}
 
@@ -137,7 +184,7 @@ Przy dobrym oświetleniu pozycja jest rzadko gubiona, a co za tym idzie gra jest
 Śledzenie otwartej dłoni daje gorsze wyniki, jedynie przy bardzo dobrym oświetleniu
 i braku innych obiektów o podobnym kształcie i kolorze śledzenie jest płynne. \\
 
-Należy pamiętać, że gra z wykorzystaniem gestów sprawia przyjemność jedynie wtedy,
+Należy pamiętać, że gra z wykorzystaniem gestów sprawia największą przyjemność wtedy,
 gdy przeciwnik również korzysta z tej opcji.
 Sterowanie przy pomocy myszki wciąż pozostaje najbardziej precyzyjne.
 
@@ -150,7 +197,7 @@ Sterowanie przy pomocy myszki wciąż pozostaje najbardziej precyzyjne.
 
 \begin{thebibliography}{9}
 
-\bibitem{TDL-thesis}
+\bibitem{TLD-thesis}
   Georg Nebehay,
   \emph{Robust Object Tracking Based on Tracking-Learning-Detection}.
   Uniwersytet Techniczny, Wiedeń,
